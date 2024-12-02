@@ -135,9 +135,9 @@ const VentaForm: React.FC<VentaFormProps> = ({
       errores.nombreCliente = 'El nombre debe tener al menos 3 caracteres y solo contener letras.';
     }
   
-    if (Number(cantidad) <= 0) {
+    if (Number(cantidad) <= 0 || Number(cantidad) > productos.find((prod) => prod.id === productoSeleccionado)?.cantidad!) {
       valido = false;
-      errores.cantidad = 'La cantidad debe ser mayor que cero.';
+      errores.cantidad = 'La cantidad debe ser mayor que cero y tampoco debe de sobrepasar el stock disponible.';
     }
   
     if (Number(total) <= 0) {

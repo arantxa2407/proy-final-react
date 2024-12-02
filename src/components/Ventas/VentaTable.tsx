@@ -56,6 +56,7 @@ const VentaTable = () => {
       try {
         await VentaService.deleteVenta(deleteId);
         setVentas(ventas.filter((venta) => venta.id !== deleteId));
+        setShowConfirmDelete(false);
       } catch (error) {
         console.error("Error al eliminar el producto:", error);
         // Aquí puedes agregar un toast o algún manejo de error si es necesario
