@@ -1,0 +1,17 @@
+.bi-shop {
+  font-size: 25px;
+  margin-right: 10px;
+}
+
+.contenedor {
+  background-color: #d8d5c067;
+  height: 90vh;
+}
+
+.grande {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.grande:hover {
+  transform: scale(1.05); /* Aumenta la tarjeta un 5% */
+}
