@@ -10,6 +10,8 @@ const EmpleadoTable = () => {
     undefined
   );
   const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+
 
   // Cargar empleados al montar el componente
   useEffect(() => {
@@ -42,9 +44,16 @@ const EmpleadoTable = () => {
     setEmpleadoToEdit(undefined); // Resetear modo de edición
   };
 
+    // Manejador para iniciar el proceso de edición
+    const handleEditClick = (empleado: Empleado) => {
+      setEmpleadoToEdit(empleado);
+    };
+  
+
   // Manejador para iniciar el proceso de eliminación
   const handleDeleteClick = (id: number) => {
     setDeleteId(id);
+    setShowConfirmDelete(true);
   };
 
   // Manejador para confirmar la eliminación de un empleado
@@ -53,6 +62,7 @@ const EmpleadoTable = () => {
       try {
         await EmpleadoService.deleteEmpleado(deleteId);
         setEmpleados(empleados.filter((empleado) => empleado.id !== deleteId));
+        setShowConfirmDelete(false);
       } catch (error) {
         console.error("Error al eliminar el empleado", error);
         // Aquí podrías mostrar un mensaje de error si lo deseas
@@ -62,6 +72,7 @@ const EmpleadoTable = () => {
 
   // Manejador para cancelar la eliminación
   const handleDeleteCancel = () => {
+    setShowConfirmDelete(false);
     setDeleteId(null);
   };
 
@@ -109,7 +120,7 @@ const EmpleadoTable = () => {
                     <button
                       className="btn"
                       style={{ backgroundColor: "rgb(241, 241, 154)", marginRight: "5px" }}
-                      onClick={() => setEmpleadoToEdit(empleado)}
+                      onClick={() => handleEditClick(empleado)}
                     >
                       <i className="bi bi-pencil" style={{ marginRight: "5px" }}></i>
                       Editar
@@ -133,8 +144,8 @@ const EmpleadoTable = () => {
       </div>
 
       {/* Modal de confirmación de eliminación */}
-      {deleteId && (
-        <div className="modal" style={{ display: "block" }}>
+      {showConfirmDelete && (
+        <div className="modal" style={{ display: "block" }} tabIndex={-1}>
           <div className="modal-dialog">
             <div className="modal-content">
               <div className="modal-header">
@@ -143,6 +154,7 @@ const EmpleadoTable = () => {
                   type="button"
                   className="btn-close"
                   onClick={handleDeleteCancel}
+                  aria-label="Close"
                 ></button>
               </div>
               <div className="modal-body">

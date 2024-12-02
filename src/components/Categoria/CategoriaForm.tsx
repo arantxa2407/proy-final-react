@@ -36,9 +36,9 @@ const CategoriaForm: React.FC<CategoriaFormProps> = ({
     const errores: { [key: string]: string } = {};
 
     // Validaciones
-    if (nombre.length < 3) {
+    if (nombre.length < 3 || !/^[a-zA-Z\s]+$/.test(nombre)) {
       valido = false;
-      errores.nombre = "El nombre debe tener al menos 3 caracteres.";
+      errores.nombre = "El nombre debe tener al menos 3 caracteres y solo contener letras.";
     }
 
     setErrores(errores);
@@ -87,7 +87,7 @@ const CategoriaForm: React.FC<CategoriaFormProps> = ({
         {isEditMode ? "Editar Categoria" : "Agregar Categoria"}
       </h2>
       <form className="row g-3" onSubmit={handleSubmit} id="categoriasForm">
-        <div className="col-md-7">
+        <div className="col-md-9">
           <label htmlFor="nombre" className="form-label">
             Nombre
           </label>
@@ -114,7 +114,7 @@ const CategoriaForm: React.FC<CategoriaFormProps> = ({
         <div className="col-12">
           <button
             type="submit"
-            className="btn w-100"
+            className="btn w-75"
             style={{ backgroundColor: "#dbebf8" }}
             disabled={isSubmitting}
           >

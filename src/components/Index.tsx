@@ -62,7 +62,7 @@ const Index = () => {
           <div className="card m-3 grande" style={{ width: '18rem' }}>
             <div className="card-body">
               <h5 className="card-title">
-                <i className="bi bi-people me-2"></i>Gestión de categorias
+              <i className="bi bi-tag me-2"></i>Gestión de categorias
               </h5>
               <p className="card-text">
                 En este apartado puedes ingresar, modificar o eliminar las categorias de los productos de la bodega.

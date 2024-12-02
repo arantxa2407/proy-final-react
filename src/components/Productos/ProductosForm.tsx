@@ -23,10 +23,10 @@ const ProductosForm: React.FC<ProductosFormProps> = ({
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<
     number | string
   >(""); // Estado para la categoría seleccionada
-  const [cantidad, setCantidad] = useState(0);
+  const [cantidad, setCantidad] = useState<string>("");
   const [descripcion, setDescripcion] = useState("");
-  const [precioDia, setPrecioDia] = useState(0);
-  const [precioNoche, setPrecioNoche] = useState(0);
+  const [precioDia, setPrecioDia] = useState<string>("");
+  const [precioNoche, setPrecioNoche] = useState<string>("");
   const [isEditMode, setIsEditMode] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [precioNocheVisible, setPrecioNocheVisible] = useState(false);
@@ -39,10 +39,10 @@ const ProductosForm: React.FC<ProductosFormProps> = ({
       setProveedor(productoToEdit.proveedor);
       setFecha_ingreso(productoToEdit.fecha_ingreso);
       setCategoriaSeleccionada(productoToEdit.categoria.id); // Establecer la categoría seleccionada
-      setCantidad(productoToEdit.cantidad);
+      setCantidad(productoToEdit.cantidad.toString());
       setDescripcion(productoToEdit.descripcion);
-      setPrecioDia(productoToEdit.precio_dia);
-      setPrecioNoche(productoToEdit.precio_noche);
+      setPrecioDia(productoToEdit.precio_dia.toString());
+      setPrecioNoche(productoToEdit.precio_noche.toString());
       // Activar el checkbox de Precio de Noche si el precio de noche es diferente al precio de día
       setPrecioNocheVisible(
         productoToEdit.precio_noche !== productoToEdit.precio_dia
@@ -70,7 +70,7 @@ const ProductosForm: React.FC<ProductosFormProps> = ({
   ) => {
     setPrecioNocheVisible(event.target.checked);
     if (!event.target.checked) {
-      setPrecioNoche(0); // Limpiar el valor cuando el campo se oculta
+      setPrecioNoche(""); // Limpiar el valor cuando el campo se oculta
     }
   };
 
@@ -92,32 +92,32 @@ const ProductosForm: React.FC<ProductosFormProps> = ({
     // Validaciones
     if (nombre.length < 3) {
       valido = false;
-      errores.nombre = 'El nombre debe tener al menos 3 caracteres.';
+      errores.nombre = "El nombre debe tener al menos 3 caracteres.";
     }
 
     if (proveedor.length < 3) {
       valido = false;
-      errores.proveedor = 'El proveedor debe tener al menos 3 caracteres.';
+      errores.proveedor = "El proveedor debe tener al menos 3 caracteres.";
     }
 
     if (descripcion.length < 3) {
       valido = false;
-      errores.descripcion = 'La descripción debe tener al menos 3 caracteres.';
+      errores.descripcion = "La descripción debe tener al menos 3 caracteres.";
     }
 
-    if (cantidad <= 0) {
+    if (Number(cantidad) <= 0) {
       valido = false;
-      errores.cantidad = 'La cantidad debe ser mayor a 0.';
+      errores.cantidad = "La cantidad debe ser mayor a 0.";
     }
 
-    if (precioDia <= 0) {
+    if (Number(precioDia) <= 0) {
       valido = false;
-      errores.precioDia = 'El precio de día debe ser mayor a 0.';
+      errores.precioDia = "El precio de día debe ser mayor a 0.";
     }
 
-    if (precioNocheVisible && precioNoche <= 0) {
+    if (precioNocheVisible && Number(precioNoche) <= 0) {
       valido = false;
-      errores.precioNoche = 'El precio de noche debe ser mayor a 0.';
+      errores.precioNoche = "El precio de noche debe ser mayor a 0.";
     }
 
     setErrores(errores);
@@ -132,10 +132,12 @@ const ProductosForm: React.FC<ProductosFormProps> = ({
       proveedor,
       fecha_ingreso,
       categoria: categorias.find((cat) => cat.id === categoriaSeleccionada)!, // Buscar la categoría por id
-      cantidad,
+      cantidad: Number(cantidad),
       descripcion,
-      precio_dia: precioDia,
-      precio_noche: precioNocheVisible ? precioNoche : precioDia, // Solo asignar precio de noche si es visible
+      precio_dia: Number(precioDia),
+      precio_noche: precioNocheVisible
+        ? Number(precioNoche)
+        : Number(precioDia), // Solo asignar precio de noche si es visible
     };
 
     try {
@@ -167,10 +169,10 @@ const ProductosForm: React.FC<ProductosFormProps> = ({
     setProveedor("");
     setFecha_ingreso("");
     setCategoriaSeleccionada(""); // Limpiar la categoría seleccionada
-    setCantidad(0);
+    setCantidad("");
     setDescripcion("");
-    setPrecioDia(0);
-    setPrecioNoche(0);
+    setPrecioDia("");
+    setPrecioNoche("");
     setPrecioNocheVisible(false);
     setIsEditMode(false);
   };
@@ -195,7 +197,9 @@ const ProductosForm: React.FC<ProductosFormProps> = ({
             placeholder="Nombre del producto"
           />
           <small
-            className={`text-danger error ${errores.nombre ? "d-block" : "d-none"}`}
+            className={`text-danger error ${
+              errores.nombre ? "d-block" : "d-none"
+            }`}
             id="errorNombre"
           >
             <i className="bi bi-exclamation-lg"></i>
@@ -217,7 +221,9 @@ const ProductosForm: React.FC<ProductosFormProps> = ({
             placeholder="Proveedor del producto"
           />
           <small
-            className={`text-danger error ${errores.proveedor ? "d-block" : "d-none"}`}
+            className={`text-danger error ${
+              errores.proveedor ? "d-block" : "d-none"
+            }`}
             id="errorProveedor"
           >
             <i className="bi bi-exclamation-lg"></i>
@@ -236,13 +242,17 @@ const ProductosForm: React.FC<ProductosFormProps> = ({
             value={fecha_ingreso}
             onChange={(e) => setFecha_ingreso(e.target.value)}
             required
-            min={new Date(new Date().setDate(new Date().getDate() - 7))
-              .toISOString()
-              .split("T")[0]} // No permitir fechas de más de una semana atrás
+            min={
+              new Date(new Date().setDate(new Date().getDate() - 7))
+                .toISOString()
+                .split("T")[0]
+            } // No permitir fechas de más de una semana atrás
             max={new Date().toISOString().split("T")[0]} // No permitir fechas futuras
           />
           <small
-            className={`text-danger error ${errores.fecha_ingreso ? "d-block" : "d-none"}`}
+            className={`text-danger error ${
+              errores.fecha_ingreso ? "d-block" : "d-none"
+            }`}
             id="errorFechaIngreso"
           >
             <i className="bi bi-exclamation-lg"></i>
@@ -271,7 +281,9 @@ const ProductosForm: React.FC<ProductosFormProps> = ({
             ))}
           </select>
           <small
-            className={`text-danger error ${errores.categoria ? "d-block" : "d-none"}`}
+            className={`text-danger error ${
+              errores.categoria ? "d-block" : "d-none"
+            }`}
             id="errorCategoria"
           >
             <i className="bi bi-exclamation-lg"></i>
@@ -288,12 +300,14 @@ const ProductosForm: React.FC<ProductosFormProps> = ({
             className="form-control"
             id="cantidad"
             value={cantidad}
-            onChange={(e) => setCantidad(Number(e.target.value))}
+            onChange={(e) => setCantidad(e.target.value)}
             required
             placeholder="Cantidad de productos"
           />
           <small
-            className={`text-danger error ${errores.cantidad ? "d-block" : "d-none"}`}
+            className={`text-danger error ${
+              errores.cantidad ? "d-block" : "d-none"
+            }`}
             id="errorCantidad"
           >
             <i className="bi bi-exclamation-lg"></i>
@@ -314,7 +328,9 @@ const ProductosForm: React.FC<ProductosFormProps> = ({
             placeholder="Descripción del producto"
           />
           <small
-            className={`text-danger error ${errores.descripcion ? "d-block" : "d-none"}`}
+            className={`text-danger error ${
+              errores.descripcion ? "d-block" : "d-none"
+            }`}
             id="errorDescripcion"
           >
             <i className="bi bi-exclamation-lg"></i>
@@ -333,13 +349,16 @@ const ProductosForm: React.FC<ProductosFormProps> = ({
               className="form-control"
               id="precio_dia"
               value={precioDia}
-              onChange={(e) => setPrecioDia(Number(e.target.value))}
+              onChange={(e) => setPrecioDia(e.target.value)}
               required
+              placeholder="Precio de día"
               step="0.01"
             />
           </div>
           <small
-            className={`text-danger error ${errores.precioDia ? "d-block" : "d-none"}`}
+            className={`text-danger error ${
+              errores.precioDia ? "d-block" : "d-none"
+            }`}
             id="errorPrecioDia"
           >
             <i className="bi bi-exclamation-lg"></i>
@@ -354,6 +373,7 @@ const ProductosForm: React.FC<ProductosFormProps> = ({
             id="precio_noche"
             checked={precioNocheVisible}
             onChange={handlePrecioNocheChange}
+            placeholder="Precio de noche"
           />
           <label className="form-check-label" htmlFor="precio_noche">
             Precio de Noche
@@ -372,12 +392,15 @@ const ProductosForm: React.FC<ProductosFormProps> = ({
                 className="form-control"
                 id="noche"
                 value={precioNoche}
-                onChange={(e) => setPrecioNoche(Number(e.target.value))}
+                onChange={(e) => setPrecioNoche(e.target.value)}
                 step="0.01"
+                placeholder="Precio de noche" // Placeholder agregado
               />
             </div>
             <small
-              className={`text-danger error ${errores.precioNoche ? "d-block" : "d-none"}`}
+              className={`text-danger error ${
+                errores.precioNoche ? "d-block" : "d-none"
+              }`}
               id="errorPrecioNoche"
             >
               <i className="bi bi-exclamation-lg"></i>
