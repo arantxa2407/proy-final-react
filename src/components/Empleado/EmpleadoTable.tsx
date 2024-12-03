@@ -30,9 +30,20 @@ const EmpleadoTable = () => {
   };
 
   // Manejador para añadir un nuevo empleado
-  const handleEmpleadoAdded = (newEmpleado: Empleado) => {
+const handleEmpleadoAdded = async (newEmpleado: Empleado) => {
+  try {
+    // Obtener la versión más reciente del empleado desde el backend
+    const response = await EmpleadoService.getEmpleadoById(newEmpleado.id!);
+    const empleadoActualizado = response.data;
+
+    // Actualizar el estado con el empleado actualizado
+    setEmpleados([...empleados, empleadoActualizado]);
+  } catch (error) {
+    console.error("Error al sincronizar el empleado recién añadido", error);
+    // Como fallback, usar el empleado local
     setEmpleados([...empleados, newEmpleado]);
-  };
+  }
+};
 
   // Manejador para actualizar un empleado existente
   const handleEmpleadoUpdated = (updatedEmpleado: Empleado) => {
@@ -111,6 +122,7 @@ const EmpleadoTable = () => {
                   <td>{empleado.id}</td>
                   <td>{empleado.nombre}</td>
                   <td>{empleado.apellido}</td>
+                  <td>{empleado.username} </td>
                   <td>{empleado.genero}</td>
                   <td>{empleado.edad}</td>
                   <td>{empleado.telefono}</td>

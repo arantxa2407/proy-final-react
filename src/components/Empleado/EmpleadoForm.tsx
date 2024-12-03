@@ -122,6 +122,7 @@ const EmpleadoForm: React.FC<EmpleadoFormProps> = ({
       username,
       password,
       roleId: 2,
+      roles: roleId === "1" ? "ADMIN" : "VENDEDOR",
     };
 
     try {
@@ -416,9 +417,9 @@ const EmpleadoForm: React.FC<EmpleadoFormProps> = ({
             Contraseña
           </label>
           <input
-            type="text"
+            type="password"
             className="form-control"
-            id="direccion"
+            id="password"
             placeholder="Contraseña del empleado"
             value={password}
             onChange={(e) => setPassword(e.target.value)}

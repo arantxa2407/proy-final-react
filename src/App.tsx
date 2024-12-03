@@ -72,7 +72,6 @@ function App() {
                 id="navbarSupportedContent"
               >
                 {/* Verificar si el usuario tiene rol ADMIN */}
-                {/* {currentUser?.roles?.nombre === "ADMIN" ? ( */}
                   <ul className="navbar-nav">
                     <li className="nav-item mx-2">
                       <Link className="nav-link active" to="/inicio">
@@ -112,27 +111,6 @@ function App() {
                       </button>
                     </li>
                   </ul>
-                {/* ) : currentUser?.nombre === "VENDEDOR" ? (
-                  <ul className="navbar-nav">
-                    <li className="nav-item mx-2">
-                      <Link className="nav-link active" to="/ventas">
-                        Venta
-                      </Link>
-                    </li>
-                    <li className="nav-item mx-2">
-                      <p className="navbar-text mb-0">Bienvenido, {username}</p>
-                    </li>
-                    <li className="nav-item mx-2">
-                      <button
-                        className="btn"
-                        style={{ backgroundColor: "#bebdbd5e" }}
-                        onClick={handleLogout}
-                      >
-                        Cerrar Sesión
-                      </button>
-                    </li>
-                  </ul>
-                ) : null} */}
               </div>
             </div>
           </nav>

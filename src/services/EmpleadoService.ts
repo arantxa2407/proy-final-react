@@ -28,7 +28,7 @@ class EmpleadoService {
       genero: empleado.genero,
       edad: empleado.edad,
       // Asegúrate de que `roles` se pase correctamente, tal vez un valor por defecto
-      roles: [{ id: parseInt(empleado.roleId.toString()) }],
+      roles: [{ id: parseInt(empleado.roleId?.toString() || "2") }],
       // Si es necesario un rol predeterminado
     };
 
