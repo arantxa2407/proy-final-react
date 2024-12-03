@@ -1,6 +1,7 @@
 // src/utils/axiosConfig.ts
 import axios from 'axios';
-import UsuariosService from '../services/UsuarioService';
+import AuthService from '../services/AuthService';
+
 
 // Configurar interceptor de respuesta de Axios
 axios.interceptors.response.use(
@@ -11,7 +12,7 @@ axios.interceptors.response.use(
     // Verificar si el error es de tipo 401 (No autorizado)
     if (error.response?.status === 401) {
       // Cerrar sesión del usuario
-      UsuariosService.logout();
+      AuthService.logout();
       // Redirigir al usuario a la página principal
       window.location.href = '/';
     }

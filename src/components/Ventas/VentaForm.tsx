@@ -80,7 +80,7 @@ const VentaForm: React.FC<VentaFormProps> = ({
 
   useEffect(() => {
     if (ventaToEdit) {
-      setEmpleadoSeleccionado(ventaToEdit.empleado.id);
+      setEmpleadoSeleccionado(ventaToEdit.empleado.id!);
       setNombreCliente(ventaToEdit.nombreCliente);
       setProductoSeleccionado(ventaToEdit.producto.id);
       setCantidad(ventaToEdit.cantidad);

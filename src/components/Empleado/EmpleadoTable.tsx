@@ -101,6 +101,7 @@ const EmpleadoTable = () => {
                 <th>Turno</th>
                 <th>Correo</th>
                 <th>Direccion</th>
+                <th>Rol</th>
                 <th>Acciones</th>
               </tr>
             </thead>
@@ -116,6 +117,7 @@ const EmpleadoTable = () => {
                   <td>{empleado.turno}</td>
                   <td>{empleado.correo}</td>
                   <td>{empleado.direccion}</td>
+                  <td>{empleado.roles?.nombre}</td>
                   <td>
                     <button
                       className="btn"
@@ -127,7 +129,7 @@ const EmpleadoTable = () => {
                     </button>
                     <button
                       className="btn"
-                      onClick={() => handleDeleteClick(empleado.id)}
+                      onClick={() => handleDeleteClick(empleado.id!)}
                       style={{ backgroundColor: "#ed7e7e" }}
                     >
                       <i className="bi bi-trash" style={{ marginRight: "5px" }}></i>

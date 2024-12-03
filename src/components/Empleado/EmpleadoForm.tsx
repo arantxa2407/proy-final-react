@@ -1,5 +1,6 @@
 import EmpleadoService from "../../services/EmpleadoService";
 import { Empleado } from "../../types/Empleado";
+import { Rol } from "../../types/Rol";
 import { useState, useEffect } from "react";
 
 interface EmpleadoFormProps {
@@ -17,14 +18,34 @@ const EmpleadoForm: React.FC<EmpleadoFormProps> = ({
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");
   const [genero, setGenero] = useState<string>("");
-  const [edad, setEdad] = useState<string>("");  // Cambié el tipo de número a cadena
-  const [telefono, setTelefono] = useState<string>("");  // Cambié el tipo de número a cadena
+  const [edad, setEdad] = useState<string>(""); // Cambié el tipo de número a cadena
+  const [telefono, setTelefono] = useState<string>(""); // Cambié el tipo de número a cadena
   const [turno, setTurno] = useState("");
   const [correo, setCorreo] = useState("");
   const [direccion, setDireccion] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [roles, setRoles] = useState<Rol[]>([]);
+  const [rolSeleccionado, setRolSeleccionado] = useState<number | string>("");
   const [errores, setErrores] = useState<{ [key: string]: string }>({});
   const [isEditMode, setIsEditMode] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    fetchRoles();
+  }, []);
+
+  const fetchRoles = async () => {
+    try {
+      const response = await EmpleadoService.getRoles();
+      setRoles(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const handleRolChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setRolSeleccionado(Number(event.target.value)); // Guardar el id de la categoría seleccionada
+  };
 
   // Efecto para cargar los datos del empleado a editar
   useEffect(() => {
@@ -32,11 +53,14 @@ const EmpleadoForm: React.FC<EmpleadoFormProps> = ({
       setNombre(empleadoToEdit.nombre);
       setApellido(empleadoToEdit.apellido);
       setGenero(empleadoToEdit.genero);
-      setEdad(empleadoToEdit.edad.toString());  // Convierte la edad a string
-      setTelefono(empleadoToEdit.telefono.toString());  // Convierte el teléfono a string
+      setEdad(empleadoToEdit.edad.toString()); // Convierte la edad a string
+      setTelefono(empleadoToEdit.telefono.toString()); // Convierte el teléfono a string
       setTurno(empleadoToEdit.turno);
       setCorreo(empleadoToEdit.correo);
       setDireccion(empleadoToEdit.direccion);
+      setUsername(empleadoToEdit.username);
+      setPassword("");
+      setRolSeleccionado(empleadoToEdit.roles?.id ?? "");
       setIsEditMode(true);
     }
   }, [empleadoToEdit]);
@@ -52,22 +76,26 @@ const EmpleadoForm: React.FC<EmpleadoFormProps> = ({
     // Validaciones
     if (nombre.length < 3 || !/^[a-zA-Z\s]+$/.test(nombre)) {
       valido = false;
-      errores.nombre = "El nombre debe tener al menos 3 caracteres y solo contener letras.";
+      errores.nombre =
+        "El nombre debe tener al menos 3 caracteres y solo contener letras.";
     }
 
     if (apellido.length < 3 || !/^[a-zA-Z\s]+$/.test(apellido)) {
       valido = false;
-      errores.apellido = "El apellido debe tener al menos 3 caracteres y solo contener letras.";
+      errores.apellido =
+        "El apellido debe tener al menos 3 caracteres y solo contener letras.";
     }
 
-    if (edad === "" || parseInt(edad) < 18) {
+    if (edad === "" || parseInt(edad) < 18 || parseInt(edad) > 100) {
       valido = false;
-      errores.edad = "Por favor, introduce una edad válida mayor de 18 años.";
+      errores.edad =
+        "Por favor, introduce una edad válida mayor de 18 años y menor de 100 años.";
     }
 
     if (telefono === "" || !/^9\d{8}$/.test(telefono)) {
       valido = false;
-      errores.telefono = "El teléfono debe tener 9 dígitos y empezar con el número 9.";
+      errores.telefono =
+        "El teléfono debe tener 9 dígitos y empezar con el número 9.";
     }
 
     if (direccion.length < 3) {
@@ -82,7 +110,7 @@ const EmpleadoForm: React.FC<EmpleadoFormProps> = ({
       return; // Prevenir el envío si hay errores
     }
 
-    const empleadoData: Omit<Empleado, "id"> = {
+    const empleadoData: Omit<Empleado, "id"> & { id: number } = {
       nombre,
       apellido,
       genero,
@@ -91,21 +119,22 @@ const EmpleadoForm: React.FC<EmpleadoFormProps> = ({
       turno,
       correo,
       direccion,
+      username,
+      password,
+      id: parseInt(rolSeleccionado.toString()),
     };
 
     try {
       if (isEditMode && empleadoToEdit) {
         // Actualizar empleado existente
         const response = await EmpleadoService.updateEmpleado(
-          empleadoToEdit.id,
+          empleadoToEdit.id!,
           empleadoData as Empleado
         );
         onEmpleadoUpdated(response.data);
       } else {
         // Crear nuevo empleado
-        const response = await EmpleadoService.createEmpleado(
-          empleadoData as Empleado
-        );
+        const response = await EmpleadoService.createEmpleado(empleadoData);
         onEmpleadoAdded(response.data);
       }
       resetForm();
@@ -126,6 +155,9 @@ const EmpleadoForm: React.FC<EmpleadoFormProps> = ({
     setTurno("");
     setCorreo("");
     setDireccion("");
+    setUsername("");
+    setPassword("");
+    setRolSeleccionado("");
     setIsEditMode(false);
   };
 
@@ -149,7 +181,9 @@ const EmpleadoForm: React.FC<EmpleadoFormProps> = ({
             required
           />
           <small
-            className={`text-danger error ${errores.nombre ? "d-block" : "d-none"}`}
+            className={`text-danger error ${
+              errores.nombre ? "d-block" : "d-none"
+            }`}
             id="errorNombre"
           >
             <i className="bi bi-exclamation-lg"></i>
@@ -171,7 +205,9 @@ const EmpleadoForm: React.FC<EmpleadoFormProps> = ({
             required
           />
           <small
-            className={`text-danger error ${errores.apellido ? "d-block" : "d-none"}`}
+            className={`text-danger error ${
+              errores.apellido ? "d-block" : "d-none"
+            }`}
             id="errorApellido"
           >
             <i className="bi bi-exclamation-lg"></i>
@@ -228,7 +264,9 @@ const EmpleadoForm: React.FC<EmpleadoFormProps> = ({
             required
           />
           <small
-            className={`text-danger error ${errores.edad ? "d-block" : "d-none"}`}
+            className={`text-danger error ${
+              errores.edad ? "d-block" : "d-none"
+            }`}
             id="errorEdad"
           >
             <i className="bi bi-exclamation-lg"></i>
@@ -250,7 +288,9 @@ const EmpleadoForm: React.FC<EmpleadoFormProps> = ({
             required
           />
           <small
-            className={`text-danger error ${errores.telefono ? "d-block" : "d-none"}`}
+            className={`text-danger error ${
+              errores.telefono ? "d-block" : "d-none"
+            }`}
             id="errorTelefono"
           >
             <i className="bi bi-exclamation-lg"></i>
@@ -307,12 +347,36 @@ const EmpleadoForm: React.FC<EmpleadoFormProps> = ({
             required
           />
           <small
-            className={`text-danger error ${errores.direccion ? "d-block" : "d-none"}`}
+            className={`text-danger error ${
+              errores.direccion ? "d-block" : "d-none"
+            }`}
             id="errorDireccion"
           >
             <i className="bi bi-exclamation-lg"></i>
             <span>{errores.direccion}</span>
           </small>
+        </div>
+
+        <div className="col-md-4">
+          <label htmlFor="rol" className="form-label">
+            Rol
+          </label>
+          <select
+            id="rol"
+            className="form-select"
+            value={rolSeleccionado}
+            onChange={handleRolChange}
+            required
+          >
+            <option value="" disabled>
+              Selecciona un rol
+            </option>
+            {roles.map((rol) => (
+              <option key={rol.id} value={rol.id}>
+                {rol.nombre}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="col-12">

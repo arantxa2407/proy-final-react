@@ -1,15 +1,15 @@
 import styles from "../css/login.module.css"; // Importar como módulo CSS
 import img from "../assets/logo.png";
-import UsuariosService from "../services/UsuarioService";
-import { Usuario } from "../types/Usuario";
 import { useState } from "react";
+import { Empleado } from "../types/Empleado";
+import AuthService from "../services/AuthService";
 
 interface LoginProps {
-  onLoginSuccess: (user: Usuario) => void;
+  onLoginSuccess: (empleado: Empleado) => void;
 }
 
 const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
-  const [nombre, setNombre] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [ver, setVer] = useState(false); // Estado para controlar la visibilidad de la contraseña
@@ -23,13 +23,13 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
     e.preventDefault();
     setIsLoading(true);
 
-    setTimeout(async () => {
       try {
-        const user = await UsuariosService.login(nombre, password);
-        if (user) {
-          onLoginSuccess(user);
+        const empleado = await AuthService.login(username, password);
+        if (empleado) {
+          onLoginSuccess(empleado);
         }
       } catch (error) {
+        console.error('Error en la autenticación:', error); // Mostrar el error completo en la consola
         const mensaje = document.getElementById("error");
         if (mensaje) {
           mensaje.style.display = "block"; // Mostrar el mensaje de error
@@ -37,7 +37,6 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
       } finally {
         setIsLoading(false); // Desactivar el estado de carga una vez terminada la validación
       }
-    }, 1000); // Espera 2 segundos antes de hacer la validación
   };
 
   return (
@@ -51,15 +50,15 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
 
           <span className={styles.error} id="error">Credenciales incorrectas</span>
           
-          <label htmlFor="user">Nombre de usuario:</label>
+          <label htmlFor="empleado">Nombre de usuario:</label>
           <div className={styles.input}>
             <input
               type="text"
-              name="user"
-              id="user"
-              value={nombre}
-              placeholder="Usuario"
-              onChange={(e) => setNombre(e.target.value)}
+              name="empleado"
+              id="empleado"
+              value={username}
+              placeholder="Empleado"
+              onChange={(e) => setUsername(e.target.value)}
               required
               className={styles.input__field}
             />
