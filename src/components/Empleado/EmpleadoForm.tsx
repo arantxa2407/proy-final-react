@@ -1,6 +1,5 @@
 import EmpleadoService from "../../services/EmpleadoService";
 import { Empleado } from "../../types/Empleado";
-import { Rol } from "../../types/Rol";
 import { useState, useEffect } from "react";
 
 interface EmpleadoFormProps {
@@ -25,27 +24,29 @@ const EmpleadoForm: React.FC<EmpleadoFormProps> = ({
   const [direccion, setDireccion] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [roles, setRoles] = useState<Rol[]>([]);
-  const [rolSeleccionado, setRolSeleccionado] = useState<number | string>("");
+  const [roleId, setRoleId] = useState("2");
+  const [roles, setRoles] = useState<{ id: number }[]>([]);
   const [errores, setErrores] = useState<{ [key: string]: string }>({});
   const [isEditMode, setIsEditMode] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    fetchRoles();
-  }, []);
+  // Función para generar el username automáticamente
+  const generateUsername = (nombre: string, apellido: string): string => {
+    const firstLetterName = nombre.charAt(0).toLowerCase();
+    // Tomar solo el primer apellido si hay más de uno
+    const firstApellido = apellido.split(" ")[0];
+    const formattedApellido =
+      firstApellido.charAt(0).toUpperCase() +
+      firstApellido.slice(1).toLowerCase();
+    return firstLetterName + formattedApellido;
+  };
 
-  const fetchRoles = async () => {
-    try {
-      const response = await EmpleadoService.getRoles();
-      setRoles(response.data);
-    } catch (error) {
-      console.error(error);
+  // Efecto para generar el username cada vez que cambian nombre o apellido
+  useEffect(() => {
+    if (nombre && apellido) {
+      setUsername(generateUsername(nombre, apellido)); // Generar username automáticamente
     }
-  };
-  const handleRolChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setRolSeleccionado(Number(event.target.value)); // Guardar el id de la categoría seleccionada
-  };
+  }, [nombre, apellido]);
 
   // Efecto para cargar los datos del empleado a editar
   useEffect(() => {
@@ -60,7 +61,7 @@ const EmpleadoForm: React.FC<EmpleadoFormProps> = ({
       setDireccion(empleadoToEdit.direccion);
       setUsername(empleadoToEdit.username);
       setPassword("");
-      setRolSeleccionado(empleadoToEdit.roles?.id ?? "");
+      setRoleId(empleadoToEdit.roles === "ADMIN" ? "1" : "2");
       setIsEditMode(true);
     }
   }, [empleadoToEdit]);
@@ -109,8 +110,7 @@ const EmpleadoForm: React.FC<EmpleadoFormProps> = ({
       setIsSubmitting(false);
       return; // Prevenir el envío si hay errores
     }
-
-    const empleadoData: Omit<Empleado, "id"> & { id: number } = {
+    const empleadoData: Omit<Empleado, "id"> & { roleId: number } = {
       nombre,
       apellido,
       genero,
@@ -121,7 +121,7 @@ const EmpleadoForm: React.FC<EmpleadoFormProps> = ({
       direccion,
       username,
       password,
-      id: parseInt(rolSeleccionado.toString()),
+      roleId: 2,
     };
 
     try {
@@ -157,7 +157,7 @@ const EmpleadoForm: React.FC<EmpleadoFormProps> = ({
     setDireccion("");
     setUsername("");
     setPassword("");
-    setRolSeleccionado("");
+    setRoleId("");
     setIsEditMode(false);
   };
 
@@ -358,25 +358,81 @@ const EmpleadoForm: React.FC<EmpleadoFormProps> = ({
         </div>
 
         <div className="col-md-4">
-          <label htmlFor="rol" className="form-label">
+          <label htmlFor="direccion" className="form-label">
             Rol
           </label>
           <select
-            id="rol"
             className="form-select"
-            value={rolSeleccionado}
-            onChange={handleRolChange}
+            id="categoria"
+            value={roleId}
+            onChange={(e) => setRoleId(e.target.value)}
+            disabled
             required
           >
             <option value="" disabled>
-              Selecciona un rol
+              Selecciona una categoría
             </option>
-            {roles.map((rol) => (
-              <option key={rol.id} value={rol.id}>
-                {rol.nombre}
-              </option>
-            ))}
+            <option value="1">ADMIN</option>
+            <option value="2">VENDEDOR</option>
           </select>
+          <small
+            className={`text-danger error ${
+              errores.direccion ? "d-block" : "d-none"
+            }`}
+            id="errorDireccion"
+          >
+            <i className="bi bi-exclamation-lg"></i>
+            <span>{errores.direccion}</span>
+          </small>
+        </div>
+
+        <div className="col-md-4">
+          <label htmlFor="direccion" className="form-label">
+            Nombre usuario
+          </label>
+          <input
+            type="text"
+            className="form-control"
+            id="direccion"
+            placeholder="Nombre de usuario"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+            disabled
+          />
+          <small
+            className={`text-danger error ${
+              errores.direccion ? "d-block" : "d-none"
+            }`}
+            id="errorDireccion"
+          >
+            <i className="bi bi-exclamation-lg"></i>
+            <span>{errores.direccion}</span>
+          </small>
+        </div>
+
+        <div className="col-md-4">
+          <label htmlFor="direccion" className="form-label">
+            Contraseña
+          </label>
+          <input
+            type="text"
+            className="form-control"
+            id="direccion"
+            placeholder="Contraseña del empleado"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <small
+            className={`text-danger error ${
+              errores.direccion ? "d-block" : "d-none"
+            }`}
+            id="errorDireccion"
+          >
+            <i className="bi bi-exclamation-lg"></i>
+            <span>{errores.direccion}</span>
+          </small>
         </div>
 
         <div className="col-12">

@@ -117,7 +117,7 @@ const EmpleadoTable = () => {
                   <td>{empleado.turno}</td>
                   <td>{empleado.correo}</td>
                   <td>{empleado.direccion}</td>
-                  <td>{empleado.roles?.nombre}</td>
+                  <td>{empleado.roles && empleado.roles.length > 0 ? empleado.roles[0].nombre : "Sin rol"}</td>
                   <td>
                     <button
                       className="btn"
