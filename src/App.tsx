@@ -20,7 +20,6 @@ function App() {
       setIsAuthenticated(true);
       setUsername(empleado.username);
       setCurrentUser(empleado);
-      
     }
   }, []);
 
@@ -42,7 +41,6 @@ function App() {
 
   return (
     <Router>
-      {/* Mostrar Login solo si no está autenticado */}
       {!isAuthenticated ? (
         <Login onLoginSuccess={handleLoginSuccess} />
       ) : (
@@ -71,51 +69,55 @@ function App() {
                 className="justify-content-end navbar-collapse"
                 id="navbarSupportedContent"
               >
-                {/* Verificar si el usuario tiene rol ADMIN */}
-                  <ul className="navbar-nav">
-                    <li className="nav-item mx-2">
-                      <Link className="nav-link active" to="/inicio">
-                        Inicio
-                      </Link>
-                    </li>
-                    <li className="nav-item mx-2">
-                      <Link className="nav-link" to="/productos">
-                        Productos
-                      </Link>
-                    </li>
-                    <li className="nav-item mx-2">
-                      <Link className="nav-link" to="/ventas">
-                        Venta
-                      </Link>
-                    </li>
-                    <li className="nav-item mx-2">
-                      <Link className="nav-link" to="/empleados">
-                        Empleado
-                      </Link>
-                    </li>
-                    <li className="nav-item mx-2">
-                      <Link className="nav-link" to="/categorias">
-                        Categoria
-                      </Link>
-                    </li>
-                    <li className="nav-item mx-2">
-                      <p className="navbar-text mb-0">Bienvenido, {currentUser?.nombre}</p>
-                    </li>
-                    <li className="nav-item mx-2">
-                      <button
-                        className="btn"
-                        style={{ backgroundColor: "#bebdbd5e" }}
-                        onClick={handleLogout}
-                      >
-                        Cerrar Sesión
-                      </button>
-                    </li>
-                  </ul>
+                <ul className="navbar-nav">
+                  <li className="nav-item mx-2">
+                    <Link className="nav-link active" to="/inicio">
+                      Inicio
+                    </Link>
+                  </li>
+                  <li className="nav-item mx-2">
+                    <Link className="nav-link" to="/productos">
+                      Productos
+                    </Link>
+                  </li>
+                  <li className="nav-item mx-2">
+                    <Link className="nav-link" to="/ventas">
+                      Venta
+                    </Link>
+                  </li>
+                  <li className="nav-item mx-2">
+                    <Link className="nav-link" to="/empleados">
+                      Empleado
+                    </Link>
+                  </li>
+                  <li className="nav-item mx-2">
+                    <Link className="nav-link" to="/categorias">
+                      Categoria
+                    </Link>
+                  </li>
+                  <li className="nav-item mx-2">
+                    <p className="navbar-text mb-0">Bienvenido, {currentUser?.nombre}</p>
+                  </li>
+                  <li className="nav-item mx-2">
+                    <button
+                      className="btn"
+                      style={{ backgroundColor: "#bebdbd5e" }}
+                      onClick={handleLogout}
+                    >
+                      Cerrar Sesión
+                    </button>
+                  </li>
+                </ul>
               </div>
             </div>
           </nav>
+
           {/* Pasar las propiedades a AppRoutes */}
-          <AppRoutes isAuthenticated={isAuthenticated} handleLoginSuccess={handleLoginSuccess} />
+          <AppRoutes
+            isAuthenticated={isAuthenticated}
+            handleLoginSuccess={handleLoginSuccess}
+            currentUser={currentUser}
+          />
         </>
       )}
     </Router>

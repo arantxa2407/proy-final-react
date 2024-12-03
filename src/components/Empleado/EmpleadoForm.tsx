@@ -158,7 +158,7 @@ const EmpleadoForm: React.FC<EmpleadoFormProps> = ({
     setDireccion("");
     setUsername("");
     setPassword("");
-    setRoleId("");
+    setRoleId("2");
     setIsEditMode(false);
   };
 
