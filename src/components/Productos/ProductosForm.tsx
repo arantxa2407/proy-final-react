@@ -31,6 +31,9 @@ const ProductosForm: React.FC<ProductosFormProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [precioNocheVisible, setPrecioNocheVisible] = useState(false);
   const [errores, setErrores] = useState<{ [key: string]: string }>({});
+  const [searchCategoria, setSearchCategoria] = useState(""); // Estado para la búsqueda
+
+
 
   // Efecto para cargar los datos del producto a editar
   useEffect(() => {
@@ -74,12 +77,23 @@ const ProductosForm: React.FC<ProductosFormProps> = ({
     }
   };
 
+  // Función para manejar el cambio de la búsqueda de categorías
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchCategoria(event.target.value); // Actualiza el valor del estado con la cadena completa
+  };
+
+  // Filtrar las categorías según el texto de búsqueda (cualquier parte del nombre)
+  const filteredCategorias = categorias.filter((categoria) =>
+    categoria.nombre.toLowerCase().includes(searchCategoria.toLowerCase()) // Se filtran las categorías
+  );
+
   // Función para manejar el cambio de la categoría seleccionada
   const handleCategoriaChange = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
     setCategoriaSeleccionada(Number(event.target.value)); // Guardar el id de la categoría seleccionada
   };
+
 
   // Función para manejar el envío del formulario
   const handleSubmit = async (event: React.FormEvent) => {
@@ -260,35 +274,35 @@ const ProductosForm: React.FC<ProductosFormProps> = ({
           </small>
         </div>
 
+        {/* Campo de categoría */}
         <div className="col-md-4">
           <label htmlFor="categoria" className="form-label">
-            Categoria
+            Categoría
           </label>
-          <select
-            className="form-select"
-            id="categoria"
-            value={categoriaSeleccionada}
-            onChange={handleCategoriaChange}
-            required
-          >
-            <option value="" disabled>
-              Selecciona una categoría
-            </option>
-            {categorias.map((cat) => (
-              <option key={cat.id} value={cat.id}>
-                {cat.nombre}
-              </option>
-            ))}
-          </select>
-          <small
-            className={`text-danger error ${
-              errores.categoria ? "d-block" : "d-none"
-            }`}
-            id="errorCategoria"
-          >
-            <i className="bi bi-exclamation-lg"></i>
-            <span>{errores.categoria}</span>
-          </small>
+          <div className="input-group">
+            <input
+              type="text"
+              className="form-control"
+              id="searchCategoria"
+              placeholder="Buscar categoría"
+              value={searchCategoria}
+              onChange={handleSearchChange}
+            />
+            <select
+              id="categoria"
+              className="form-select"
+              value={categoriaSeleccionada}
+              onChange={handleCategoriaChange}
+              required
+            >
+              <option value="">Seleccione una categoría</option>
+              {filteredCategorias.map((categoria) => (
+                <option key={categoria.id} value={categoria.id}>
+                  {categoria.nombre}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         <div className="col-md-4">

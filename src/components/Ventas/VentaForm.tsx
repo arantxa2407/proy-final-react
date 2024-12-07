@@ -36,6 +36,8 @@ const VentaForm: React.FC<VentaFormProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errores, setErrores] = useState<{ [key: string]: string }>({});
   const [horaActual, setHoraActual] = useState<number>(new Date().getHours());
+  const [searchProducto, setSearchProducto] = useState(""); // Estado para la búsqueda
+
 
   useEffect(() => {
     const intervalo = setInterval(() => {
@@ -103,6 +105,18 @@ const VentaForm: React.FC<VentaFormProps> = ({
   ) => {
     setEmpleadoSeleccionado(Number(event.target.value)); // Guardar el id de la categoría seleccionada
   };
+
+    // Función para manejar el cambio de la búsqueda de categorías
+    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      setSearchProducto(event.target.value); // Actualiza el valor del estado con la cadena completa
+    };
+  
+    // Filtrar las categorías según el texto de búsqueda (cualquier parte del nombre)
+    const filteredProductos = productos.filter((producto) =>
+      producto.nombre.toLowerCase().includes(searchProducto.toLowerCase()) // Se filtran las categorías
+    );
+  
+  
 
   // Efecto para actualizar el total cuando cambie la cantidad o el producto
   useEffect(() => {
@@ -245,6 +259,16 @@ const VentaForm: React.FC<VentaFormProps> = ({
           <label htmlFor="producto" className="form-label">
             Producto
           </label>
+          <div className="input-group">
+
+          <input
+              type="text"
+              className="form-control"
+              id="searchProducto"
+              placeholder="Buscar categoría"
+              value={searchProducto}
+              onChange={handleSearchChange}
+            />
           <select
             className="form-select"
             id="producto"
@@ -252,15 +276,14 @@ const VentaForm: React.FC<VentaFormProps> = ({
             value={productoSeleccionado}
             onChange={handleProductoChange}
           >
-            <option value="" disabled>
-              Selecciona un producto
-            </option>
-            {productos.map((producto) => (
-              <option key={producto.id} value={producto.id}>
-                {producto.nombre}
-              </option>
-            ))}
-          </select>
+              <option value="">Seleccione una categoría</option>
+              {filteredProductos.map((producto) => (
+                <option key={producto.id} value={producto.id}>
+                  {producto.nombre}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         <div className="col-md-4">
