@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import AppRoutes from "./routes/AppRoutes";
 import { Empleado } from "./types/Empleado";
 import Login from "./components/Login";
+import AuthService from "./services/AuthService";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -14,10 +15,8 @@ function App() {
 
   // Efecto para verificar si hay un usuario autenticado al cargar la aplicación
   useEffect(() => {
-    // Obtener el empleado desde localStorage
-    const storedEmpleado = localStorage.getItem("currentEmpleado");
-    if (storedEmpleado) {
-      const empleado: Empleado = JSON.parse(storedEmpleado);
+    const empleado = AuthService.getCurrentEmpleado();
+    if (empleado) {
       setIsAuthenticated(true);
       setUsername(empleado.username);
       setCurrentUser(empleado);
