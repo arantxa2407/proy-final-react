@@ -2,17 +2,40 @@ import { useEffect, useState } from "react";
 import ProductoService from "../../services/ProductoService";
 import ProductosForm from "./ProductosForm";
 import { Producto } from "../../types/Producto";
+import CategoriaService from "../../services/CategoriaService";
+import { Categoria } from "../../types/Categoria";
 
 const ProductosTable = () => {
   // Estados para manejar la lista de productos y operaciones
   const [productos, setProductos] = useState<Producto[]>([]);
-  const [productoToEdit, setProductoToEdit] = useState<Producto | undefined>(undefined);
+  const [categorias, setCategorias] = useState<Categoria[]>([]);
+
+  // Estados para los filtros
+  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<
+    string | null
+  >(null);
+  const [proveedorSeleccionado, setProveedorSeleccionado] = useState<
+    string | null
+  >(null);
+  const [productoToEdit, setProductoToEdit] = useState<Producto | undefined>(
+    undefined
+  );
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
 
-  // Cargar productos al montar el componente
+  // Estado para la búsqueda por nombre de producto
+  const [searchTerm, setSearchTerm] = useState<string>("");
+
+  const [isCategoryHovered, setIsCategoryHovered] = useState(false);
+  const [isProviderHovered, setIsProviderHovered] = useState(false);
+
+  const [ordenSeleccionado, setOrdenSeleccionado] =
+    useState<string>("fecha_ingreso_desc");
+
+  // Cargar productos y categorías al montar el componente
   useEffect(() => {
     fetchProductos();
+    fetchCategorias();
   }, []);
 
   // Función para obtener la lista de productos
@@ -21,9 +44,51 @@ const ProductosTable = () => {
       const response = await ProductoService.getProductos();
       setProductos(response.data);
     } catch (error) {
-      console.error('Error al cargar productos:', error);
-      // Aquí puedes agregar un toast o algún manejo de errores si es necesario
+      console.error("Error al cargar productos:", error);
     }
+  };
+
+  // Función para obtener la lista de categorías
+  const fetchCategorias = async () => {
+    try {
+      const response = await CategoriaService.getCategorias();
+      setCategorias(response.data);
+    } catch (error) {
+      console.error("Error al cargar categorías:", error);
+    }
+  };
+
+  // Función para filtrar productos según la categoría, proveedor y nombre
+  const getFilteredProducts = () => {
+    return productos.filter((producto) => {
+      // Filtramos por categoría
+      const isCategoryMatch =
+        categoriaSeleccionada === null ||
+        producto.categoria.nombre === categoriaSeleccionada;
+      // Filtramos por proveedor
+      const isProviderMatch =
+        proveedorSeleccionado === null ||
+        producto.proveedor === proveedorSeleccionado;
+      // Filtramos por nombre de producto
+      const isNameMatch = producto.nombre
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+
+      return isCategoryMatch && isProviderMatch && isNameMatch;
+    });
+  };
+
+  // Manejadores de cambios de filtros
+  const handleCategoriaChange = (categoria: string | null) => {
+    setCategoriaSeleccionada(categoria);
+  };
+
+  const handleProveedorChange = (proveedor: string | null) => {
+    setProveedorSeleccionado(proveedor);
+  };
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
   };
 
   // Manejador para añadir un nuevo producto
@@ -59,10 +124,8 @@ const ProductosTable = () => {
         await ProductoService.deleteProducto(deleteId);
         setProductos(productos.filter((producto) => producto.id !== deleteId));
         setShowConfirmDelete(false);
-        // Aquí puedes agregar un toast o algún manejo de éxito si es necesario
       } catch (error) {
         console.error("Error al eliminar el producto:", error);
-        // Aquí puedes agregar un toast o algún manejo de error si es necesario
       }
     }
   };
@@ -73,6 +136,46 @@ const ProductosTable = () => {
     setDeleteId(null);
   };
 
+  // Productos filtrados
+  const productosFiltrados = getFilteredProducts();
+
+  const ordenarProductos = (productos: Producto[]) => {
+    switch (ordenSeleccionado) {
+      case "fecha_ingreso_asc":
+        return productos.sort(
+          (a, b) =>
+            new Date(a.fecha_ingreso).getTime() -
+            new Date(b.fecha_ingreso).getTime()
+        );
+      case "fecha_ingreso_desc":
+        return productos.sort(
+          (a, b) =>
+            new Date(b.fecha_ingreso).getTime() -
+            new Date(a.fecha_ingreso).getTime()
+        );
+      case "precio_dia_asc":
+        return productos.sort((a, b) => a.precio_dia - b.precio_dia);
+      case "precio_dia_desc":
+        return productos.sort((a, b) => b.precio_dia - a.precio_dia);
+      case "precio_noche_asc":
+        return productos.sort((a, b) => a.precio_noche - b.precio_noche);
+      case "precio_noche_desc":
+        return productos.sort((a, b) => b.precio_noche - a.precio_noche);
+      case "cantidad_asc":
+        return productos.sort((a, b) => a.cantidad - b.cantidad);
+      case "cantidad_desc":
+        return productos.sort((a, b) => b.cantidad - a.cantidad);
+      case "id_asc":
+        return productos.sort((a, b) => a.id - b.id); // Ordenar por ID de menor a mayor
+      case "id_desc":
+        return productos.sort((a, b) => b.id - a.id); // Ordenar por ID de mayor a menor
+      default:
+        return productos;
+    }
+  };
+  
+  const productosFiltradosOrdenados = ordenarProductos(productosFiltrados);
+
   return (
     <>
       <ProductosForm
@@ -81,9 +184,130 @@ const ProductosTable = () => {
         productoToEdit={productoToEdit}
       />
 
-      <div className="container mt-4">
-        <h2>Lista de Productos</h2>
-        {productos.length > 0 ? (
+<div className="container mt-4">
+  <h2>Lista de Productos</h2>
+  <div className="mb-3">
+    <div className="row d-flex justify-content-center align-items-center">
+      {/* Campo de búsqueda */}
+      <div className="col-md-3">
+        <input
+          type="text"
+          placeholder="Buscar por nombre de producto"
+          value={searchTerm}
+          onChange={handleSearchChange}
+          className="form-control"
+        />
+      </div>
+
+      {/* Dropdown para seleccionar categoría */}
+      <div className="col-md-2">
+        <div
+          className="dropdown"
+          onMouseEnter={() => setIsCategoryHovered(true)}
+          onMouseLeave={() => setIsCategoryHovered(false)}
+        >
+          <button className="dropdown-button">
+            Categoría
+          </button>
+          {isCategoryHovered && (
+            <div className="dropdown-options">
+              <div
+                className="dropdown-option"
+                onClick={() => handleCategoriaChange(null)}
+              >
+                Todos
+              </div>
+              {categorias.map((cat, index) => (
+                <div
+                  key={index}
+                  className="dropdown-option"
+                  onClick={() => handleCategoriaChange(cat.nombre)}
+                >
+                  {cat.nombre}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Dropdown para seleccionar proveedor */}
+      <div className="col-md-2">
+        <div
+          className="dropdown"
+          onMouseEnter={() => setIsProviderHovered(true)}
+          onMouseLeave={() => setIsProviderHovered(false)}
+        >
+          <button className="dropdown-button">
+            Proveedor
+          </button>
+          {isProviderHovered && (
+            <div className="dropdown-options">
+              <div
+                className="dropdown-option"
+                onClick={() => handleProveedorChange(null)}
+              >
+                Todos
+              </div>
+              {productos
+                .map((prod) => prod.proveedor)
+                .filter(
+                  (value, index, self) => self.indexOf(value) === index
+                )
+                .map((proveedor, index) => (
+                  <div
+                    key={index}
+                    className="dropdown-option"
+                    onClick={() => handleProveedorChange(proveedor)}
+                  >
+                    {proveedor}
+                  </div>
+                ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Combobox para seleccionar el orden */}
+      <div className="col-md-3">
+        <select
+          className="form-select w-100"
+          value={ordenSeleccionado}
+          onChange={(e) => setOrdenSeleccionado(e.target.value)}
+        >
+          <option value="fecha_ingreso_desc">
+            Fecha de Ingreso (Más reciente)
+          </option>
+          <option value="fecha_ingreso_asc">
+            Fecha de Ingreso (Más antigua)
+          </option>
+          <option value="precio_dia_desc">
+            Precio de Día (Mayor a menor)
+          </option>
+          <option value="precio_dia_asc">
+            Precio de Día (Menor a mayor)
+          </option>
+          <option value="precio_noche_desc">
+            Precio de Noche (Mayor a menor)
+          </option>
+          <option value="precio_noche_asc">
+            Precio de Noche (Menor a mayor)
+          </option>
+          <option value="cantidad_desc">Cantidad (Mayor a menor)</option>
+          <option value="cantidad_asc">Cantidad (Menor a mayor)</option>
+          <option value="id_desc">
+    ID (Mayor a menor)
+  </option>
+  <option value="id_asc">
+    ID (Menor a mayor)
+  </option>
+
+        </select>
+      </div>
+  </div>
+</div>
+
+        {productosFiltrados.length > 0 ? (
           <table id="tablaProductos" className="table table-bordered mb-5">
             <thead>
               <tr>
@@ -104,7 +328,7 @@ const ProductosTable = () => {
               </tr>
             </thead>
             <tbody>
-              {productos.map((producto) => (
+              {productosFiltradosOrdenados.map((producto) => (
                 <tr key={producto.id}>
                   <td>{producto.id}</td>
                   <td>{producto.nombre}</td>
@@ -119,7 +343,7 @@ const ProductosTable = () => {
                     <button
                       className="btn"
                       style={{
-                        backgroundColor: " rgb(241, 241, 154)",
+                        backgroundColor: "rgb(241, 241, 154)",
                         marginRight: "5px",
                       }}
                       onClick={() => handleEditClick(producto)}
@@ -152,7 +376,11 @@ const ProductosTable = () => {
 
         {/* Confirmación de eliminación */}
         {showConfirmDelete && (
-          <div className="modal show" style={{ display: "block" }} tabIndex={-1}>
+          <div
+            className="modal show"
+            style={{ display: "block" }}
+            tabIndex={-1}
+          >
             <div className="modal-dialog">
               <div className="modal-content">
                 <div className="modal-header">

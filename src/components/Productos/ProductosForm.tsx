@@ -119,19 +119,19 @@ const ProductosForm: React.FC<ProductosFormProps> = ({
       errores.descripcion = "La descripción debe tener al menos 3 caracteres.";
     }
 
-    if (Number(cantidad) <= 0) {
+    if (Number(cantidad) < 1) {
       valido = false;
-      errores.cantidad = "La cantidad debe ser mayor a 0.";
+      errores.cantidad = "La cantidad minima es 1.";
     }
 
-    if (Number(precioDia) <= 0) {
+    if (Number(precioDia) < 0.2) {
       valido = false;
-      errores.precioDia = "El precio de día debe ser mayor a 0.";
+      errores.precioDia = "El precio de día debe ser mayor o igual a 0.1";
     }
 
-    if (precioNocheVisible && Number(precioNoche) <= 0) {
+    if (precioNocheVisible && Number(precioNoche) < 0.2) {
       valido = false;
-      errores.precioNoche = "El precio de noche debe ser mayor a 0.";
+      errores.precioNoche = "El precio de noche debe ser mayor o igual a 0.1";
     }
 
     setErrores(errores);

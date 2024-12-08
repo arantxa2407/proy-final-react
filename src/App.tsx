@@ -4,7 +4,6 @@ import "./css/nav.css";
 import { Link, BrowserRouter as Router } from "react-router-dom";
 import { useState, useEffect } from "react";
 import AppRoutes from "./routes/AppRoutes";
-import AuthService from "./services/AuthService";
 import { Empleado } from "./types/Empleado";
 import Login from "./components/Login";
 
@@ -15,8 +14,10 @@ function App() {
 
   // Efecto para verificar si hay un usuario autenticado al cargar la aplicación
   useEffect(() => {
-    const empleado = AuthService.getCurrentEmpleado();
-    if (empleado) {
+    // Obtener el empleado desde localStorage
+    const storedEmpleado = localStorage.getItem("currentEmpleado");
+    if (storedEmpleado) {
+      const empleado: Empleado = JSON.parse(storedEmpleado);
       setIsAuthenticated(true);
       setUsername(empleado.username);
       setCurrentUser(empleado);
@@ -29,11 +30,14 @@ function App() {
     setIsAuthenticated(true);
     setUsername(empleado.username);
     setCurrentUser(empleado);
+
+    // Guardar empleado en localStorage
+    localStorage.setItem("currentEmpleado", JSON.stringify(empleado));
   };
 
   // Manejador para cerrar sesión
   const handleLogout = () => {
-    AuthService.logout();
+    localStorage.removeItem("currentEmpleado"); // Eliminar empleado de localStorage
     setIsAuthenticated(false);
     setUsername("");
     setCurrentUser(null);
@@ -75,28 +79,37 @@ function App() {
                       Inicio
                     </Link>
                   </li>
-                  <li className="nav-item mx-2">
-                    <Link className="nav-link" to="/productos">
-                      Productos
-                    </Link>
-                  </li>
+                  {/* Mostrar elementos dependiendo del rol */}
+                  {currentUser?.roles?.[0]?.nombre === "ADMIN" && (
+                    <>
+                      <li className="nav-item mx-2">
+                        <Link className="nav-link" to="/categorias">
+                          Categoria
+                        </Link>
+                      </li>
+                      <li className="nav-item mx-2">
+                        <Link className="nav-link" to="/empleados">
+                          Empleado
+                        </Link>
+                      </li>
+                      <li className="nav-item mx-2">
+                        <Link className="nav-link" to="/productos">
+                          Productos
+                        </Link>
+                      </li>
+                    </>
+                  )}
+                  {/* Mostrar siempre 'Inicio' y 'Venta' */}
                   <li className="nav-item mx-2">
                     <Link className="nav-link" to="/ventas">
                       Venta
                     </Link>
                   </li>
+
+
+                  {/* Mostrar el nombre del usuario y el botón de logout */}
                   <li className="nav-item mx-2">
-                    <Link className="nav-link" to="/empleados">
-                      Empleado
-                    </Link>
-                  </li>
-                  <li className="nav-item mx-2">
-                    <Link className="nav-link" to="/categorias">
-                      Categoria
-                    </Link>
-                  </li>
-                  <li className="nav-item mx-2">
-                    <p className="navbar-text mb-0">Bienvenido, {currentUser?.nombre}</p>
+                    <p className="navbar-text mb-0">Bienvenido, {currentUser?.nombre || username}</p>
                   </li>
                   <li className="nav-item mx-2">
                     <button

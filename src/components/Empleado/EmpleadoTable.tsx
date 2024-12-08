@@ -106,6 +106,7 @@ const handleEmpleadoAdded = async (newEmpleado: Empleado) => {
                 <th>ID</th>
                 <th>Nombre</th>
                 <th>Apellidos</th>
+                <th>Nombre de usuario</th>
                 <th>Genero</th>
                 <th>Edad</th>
                 <th>Teléfono</th>

@@ -25,10 +25,11 @@ const EmpleadoForm: React.FC<EmpleadoFormProps> = ({
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [roleId, setRoleId] = useState("2");
-  const [roles, setRoles] = useState<{ id: number }[]>([]);
   const [errores, setErrores] = useState<{ [key: string]: string }>({});
   const [isEditMode, setIsEditMode] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [empleados, setEmpleados] = useState<Empleado[]>([]);
+  const [showPassword, setShowPassword] = useState(false);
 
   // Función para generar el username automáticamente
   const generateUsername = (nombre: string, apellido: string): string => {
@@ -48,6 +49,19 @@ const EmpleadoForm: React.FC<EmpleadoFormProps> = ({
     }
   }, [nombre, apellido]);
 
+  useEffect(() => {
+    fetchEmpleados();
+  }, []);
+
+  const fetchEmpleados = async () => {
+    try {
+      const response = await EmpleadoService.getEmpleados();
+      setEmpleados(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   // Efecto para cargar los datos del empleado a editar
   useEffect(() => {
     if (empleadoToEdit) {
@@ -61,7 +75,12 @@ const EmpleadoForm: React.FC<EmpleadoFormProps> = ({
       setDireccion(empleadoToEdit.direccion);
       setUsername(empleadoToEdit.username);
       setPassword("");
-      setRoleId(empleadoToEdit.roles === "ADMIN" ? "1" : "2");
+      setRoleId(
+        empleadoToEdit.roles &&
+          empleadoToEdit.roles.some((role) => role.nombre === "ADMIN")
+          ? "1"
+          : "2"
+      );
       setIsEditMode(true);
     }
   }, [empleadoToEdit]);
@@ -104,12 +123,52 @@ const EmpleadoForm: React.FC<EmpleadoFormProps> = ({
       errores.direccion = "La dirección debe tener al menos 3 caracteres.";
     }
 
+    if (
+      password.length < 8 ||
+      !/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&/+=]).+$/.test(password)
+    ) {
+      valido = false;
+      errores.password =
+        "La contraseña debe tener al menos 8 caracteres, un número, una letra minúscula, una letra mayúscula y un carácter especial.";
+    }
+
+    //con esta validacion comprobaremos que no se repita el nombre de usuario y le daremos alternativas
+    function generateAlternativeUsernames(nombre: string, apellido: string) {
+      const usernameBase = generateUsername(nombre, apellido);
+      // Generamos dos alternativas usando el nombre base y un número aleatorio
+      const alternative1 = `${usernameBase}${Math.floor(Math.random() * 100)}`;
+      const alternative2 = `${usernameBase}${Math.floor(Math.random() * 100)}`;
+      return [alternative1, alternative2];
+    }
+
+    // Aquí omitimos las validaciones de correo y username si estamos en modo de edición
+    if (!isEditMode) {
+      if (
+        correo ===
+        empleados.find((empleado) => empleado.correo === correo)?.correo
+      ) {
+        valido = false;
+        errores.correo = "El correo ya está registrado";
+      }
+
+      // Generamos alternativas si el username ya está en uso
+      if (
+        empleados.some((empleado) => empleado.username === username)
+      ) {
+        valido = false;
+        const [alt1, alt2] = generateAlternativeUsernames(nombre, apellido);
+        errores.username = `El nombre de usuario ya está registrado. Por favor elija otro, como por ejemplo: ${alt1} o ${alt2}.`;
+      }
+    }
+    
+
     setErrores(errores);
 
     if (!valido) {
       setIsSubmitting(false);
       return; // Prevenir el envío si hay errores
     }
+
     const empleadoData: Omit<Empleado, "id"> & { roleId: number } = {
       nombre,
       apellido,
@@ -122,7 +181,10 @@ const EmpleadoForm: React.FC<EmpleadoFormProps> = ({
       username,
       password,
       roleId: 2,
-      roles: roleId === "1" ? "ADMIN" : "VENDEDOR",
+      roles:
+        roleId === "1"
+          ? [{ id: 1, nombre: "ADMIN" }]
+          : [{ id: 2, nombre: "VENDEDOR" }],
     };
 
     try {
@@ -332,6 +394,15 @@ const EmpleadoForm: React.FC<EmpleadoFormProps> = ({
             onChange={(e) => setCorreo(e.target.value)}
             required
           />
+          <small
+            className={`text-danger error ${
+              errores.correo ? "d-block" : "d-none"
+            }`}
+            id="errorCorreo"
+          >
+            <i className="bi bi-exclamation-lg"></i>
+            <span>{errores.correo}</span>
+          </small>
         </div>
 
         <div className="col-md-4">
@@ -364,7 +435,7 @@ const EmpleadoForm: React.FC<EmpleadoFormProps> = ({
           </label>
           <select
             className="form-select"
-            id="categoria"
+            id="rol"
             value={roleId}
             onChange={(e) => setRoleId(e.target.value)}
             disabled
@@ -378,12 +449,12 @@ const EmpleadoForm: React.FC<EmpleadoFormProps> = ({
           </select>
           <small
             className={`text-danger error ${
-              errores.direccion ? "d-block" : "d-none"
+              errores.rol ? "d-block" : "d-none"
             }`}
-            id="errorDireccion"
+            id="errorRol"
           >
             <i className="bi bi-exclamation-lg"></i>
-            <span>{errores.direccion}</span>
+            <span>{errores.rol}</span>
           </small>
         </div>
 
@@ -394,45 +465,53 @@ const EmpleadoForm: React.FC<EmpleadoFormProps> = ({
           <input
             type="text"
             className="form-control"
-            id="direccion"
+            id="username"
             placeholder="Nombre de usuario"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
-            disabled
           />
           <small
             className={`text-danger error ${
-              errores.direccion ? "d-block" : "d-none"
+              errores.username ? "d-block" : "d-none"
             }`}
-            id="errorDireccion"
+            id="errorUsername"
           >
             <i className="bi bi-exclamation-lg"></i>
-            <span>{errores.direccion}</span>
+            <span>{errores.username}</span>
           </small>
         </div>
 
+        {/* Contraseña */}
         <div className="col-md-4">
           <label htmlFor="direccion" className="form-label">
             Contraseña
           </label>
-          <input
-            type="password"
-            className="form-control"
-            id="password"
-            placeholder="Contraseña del empleado"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+          <div className="input-group">
+            <input
+              type={showPassword ? "text" : "password"} // Si showPassword es true, mostrar la contraseña
+              className="form-control"
+              id="password"
+              placeholder="Contraseña del empleado"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <button
+              className="btn btn-outline-secondary"
+              type="button"
+              id="button-addon1"
+              onClick={() => setShowPassword(!showPassword)} // Cambiar el estado de visibilidad de la contraseña
+            >
+              <i className={showPassword ? "bi bi-eye-slash" : "bi bi-eye"}></i>
+            </button>
+          </div>
           <small
-            className={`text-danger error ${
-              errores.direccion ? "d-block" : "d-none"
-            }`}
-            id="errorDireccion"
+            className={`text-danger error ${errores.password ? "d-block" : "d-none"}`}
+            id="errorPassword"
           >
             <i className="bi bi-exclamation-lg"></i>
-            <span>{errores.direccion}</span>
+            <span>{errores.password}</span>
           </small>
         </div>
 

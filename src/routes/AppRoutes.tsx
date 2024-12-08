@@ -15,7 +15,7 @@ interface AppRoutesProps {
 }
 
 const AppRoutes: React.FC<AppRoutesProps> = ({ isAuthenticated, handleLoginSuccess, currentUser }) => {
-  // Validar si el usuario no está autenticado
+  // Si el usuario no está autenticado, redirigimos a Login
   if (!isAuthenticated) {
     return (
       <Routes>
@@ -24,14 +24,18 @@ const AppRoutes: React.FC<AppRoutesProps> = ({ isAuthenticated, handleLoginSucce
     );
   }
 
+  // Si el usuario está autenticado, gestionamos las rutas
   return (
     <Routes>
+      {/* Redirige la ruta raíz al inicio */}
       <Route path="/" element={<Navigate to="/inicio" />} />
-
-      <Route path="/inicio" element={<Index />} />
+      
+      {/* Rutas públicas */}
+      <Route path="/inicio" element={<Index currentUser={currentUser} />} />
       <Route path="/ventas" element={<Ventas />} />
 
-      {currentUser?.roles[0].nombre === "ADMIN" && (
+      {/* Rutas protegidas por rol ADMIN */}
+      {currentUser?.roles?.[0]?.nombre === "ADMIN" && (
         <>
           <Route path="/empleados" element={<Empleado />} />
           <Route path="/productos" element={<Productos />} />
@@ -39,6 +43,7 @@ const AppRoutes: React.FC<AppRoutesProps> = ({ isAuthenticated, handleLoginSucce
         </>
       )}
 
+      {/* Redirigir cualquier otra ruta no definida al inicio */}
       <Route path="*" element={<Navigate to="/inicio" />} />
     </Routes>
   );
