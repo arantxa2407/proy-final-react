@@ -22,22 +22,21 @@ const VentaForm: React.FC<VentaFormProps> = ({
   const [empleados, setEmpleados] = useState<Empleado[]>([]);
   const [empleadoSeleccionado, setEmpleadoSeleccionado] = useState<
     number | string
-  >(""); // Estado para la categoría seleccionada
+  >("");
 
   const [nombreCliente, setNombreCliente] = useState("");
   const [productos, setProductos] = useState<Producto[]>([]);
   const [productoSeleccionado, setProductoSeleccionado] = useState<
     number | string
-  >(""); // Estado para la categoría seleccionada
-  const [cantidad, setCantidad] = useState<number | string>(""); // Cambiado a string
-  const [total, setTotal] = useState<number | string>(""); // Cambiado a string
+  >("");
+  const [cantidad, setCantidad] = useState<number | string>(""); 
+  const [total, setTotal] = useState<number | string>(""); 
   const [metodoPago, setMetodoPago] = useState("");
   const [isEditMode, setIsEditMode] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errores, setErrores] = useState<{ [key: string]: string }>({});
   const [horaActual, setHoraActual] = useState<number>(new Date().getHours());
-  const [searchProducto, setSearchProducto] = useState(""); // Estado para la búsqueda
-
+  const [searchProducto, setSearchProducto] = useState(""); 
 
   useEffect(() => {
     const intervalo = setInterval(() => {
@@ -48,14 +47,6 @@ const VentaForm: React.FC<VentaFormProps> = ({
   }, []);
 
   const esHoraDeNoche = horaActual >= 22 || horaActual < 5;
-
-  // const aumentar = () => {
-  //   setCantidad((prev) => (typeof prev === "number" ? prev + 1 : 1)); // Cambiar a 1 si es string vacío
-  // };
-
-  // const reducir = () => {
-  //   setCantidad((prev) => (typeof prev === "number" && prev > 0 ? prev - 1 : prev));
-  // };
 
   useEffect(() => {
     fetchEmpleados();
@@ -92,48 +83,41 @@ const VentaForm: React.FC<VentaFormProps> = ({
     }
   }, [ventaToEdit]);
 
-  // Función para manejar el cambio de la categoría seleccionada
   const handleProductoChange = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
-    setProductoSeleccionado(Number(event.target.value)); // Guardar el id de la categoría seleccionada
+    setProductoSeleccionado(Number(event.target.value)); 
   };
 
-  // Función para manejar el cambio de la categoría seleccionada
   const handleEmpleadoChange = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
-    setEmpleadoSeleccionado(Number(event.target.value)); // Guardar el id de la categoría seleccionada
+    setEmpleadoSeleccionado(Number(event.target.value)); 
   };
 
-    // Función para manejar el cambio de la búsqueda de categorías
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      setSearchProducto(event.target.value); // Actualiza el valor del estado con la cadena completa
+      setSearchProducto(event.target.value); 
     };
   
-    // Filtrar las categorías según el texto de búsqueda (cualquier parte del nombre)
     const filteredProductos = productos.filter((producto) =>
-      producto.nombre.toLowerCase().includes(searchProducto.toLowerCase()) // Se filtran las categorías
+      producto.nombre.toLowerCase().includes(searchProducto.toLowerCase())
     );
   
-  
-
-  // Efecto para actualizar el total cuando cambie la cantidad o el producto
   useEffect(() => {
     if (productoSeleccionado) {
-      setTotal( // Calcular el total si es de dia o de noche
+      setTotal( 
         esHoraDeNoche 
-          ? Number(cantidad) * productos.find((prod) => prod.id === productoSeleccionado)?.precio_noche! // Precio de noche
-          : Number(cantidad) * productos.find((prod) => prod.id === productoSeleccionado)?.precio_dia! // Precio de día
+          ? Number(cantidad) * productos.find((prod) => prod.id === productoSeleccionado)?.precio_noche! 
+          : Number(cantidad) * productos.find((prod) => prod.id === productoSeleccionado)?.precio_dia! 
       );
     }
   }, [cantidad, productoSeleccionado]);
 
   useEffect(() => {
     const now = new Date();
-    const fechaFormateada = now.toISOString();  // Si deseas guardar en formato ISO 8601
+    const fechaFormateada = now.toISOString(); 
     setFechaVenta(fechaFormateada);
-  }, []); // Esto se ejecutará solo una vez al cargar el componente
+  }, []);
   
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -143,7 +127,6 @@ const VentaForm: React.FC<VentaFormProps> = ({
     let valido = true;
     const errores: { [key: string]: string } = {};
   
-    // Validaciones
     if (nombreCliente.length < 3 || !/^[a-zA-Z\s]+$/.test(nombreCliente)) {
       valido = false;
       errores.nombreCliente = 'El nombre debe tener al menos 3 caracteres y solo contener letras.';
@@ -163,12 +146,11 @@ const VentaForm: React.FC<VentaFormProps> = ({
   
     if (!valido) {
       setIsSubmitting(false);
-      return; // Prevenir el envío si hay errores
+      return; 
     }
   
-    // Asignar la fecha actual
     const ventaData: Omit<Venta, "id"> = {
-      fechaVenta: fechaVenta, // Utilizar la fecha actual
+      fechaVenta: fechaVenta, 
       empleado: empleados.find((empleado) => empleado.id === empleadoSeleccionado)!,
       nombreCliente,
       producto: productos.find((producto) => producto.id === productoSeleccionado)!,

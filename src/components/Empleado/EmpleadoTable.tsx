@@ -4,7 +4,6 @@ import EmpleadosForm from "./EmpleadoForm";
 import { Empleado } from "../../types/Empleado";
 
 const EmpleadoTable = () => {
-  // Estados para manejar la lista de empleados y operaciones
   const [empleados, setEmpleados] = useState<Empleado[]>([]);
   const [empleadoToEdit, setEmpleadoToEdit] = useState<Empleado | undefined>(
     undefined
@@ -25,22 +24,18 @@ const EmpleadoTable = () => {
       setEmpleados(response.data);
     } catch (error) {
       console.error("Error al cargar los empleados", error);
-      // Aquí podrías mostrar un mensaje de error si lo deseas
     }
   };
 
   // Manejador para añadir un nuevo empleado
 const handleEmpleadoAdded = async (newEmpleado: Empleado) => {
   try {
-    // Obtener la versión más reciente del empleado desde el backend
     const response = await EmpleadoService.getEmpleadoById(newEmpleado.id!);
     const empleadoActualizado = response.data;
 
-    // Actualizar el estado con el empleado actualizado
     setEmpleados([...empleados, empleadoActualizado]);
   } catch (error) {
     console.error("Error al sincronizar el empleado recién añadido", error);
-    // Como fallback, usar el empleado local
     setEmpleados([...empleados, newEmpleado]);
   }
 };
@@ -52,7 +47,7 @@ const handleEmpleadoAdded = async (newEmpleado: Empleado) => {
         est.id === updatedEmpleado.id ? updatedEmpleado : est
       )
     );
-    setEmpleadoToEdit(undefined); // Resetear modo de edición
+    setEmpleadoToEdit(undefined);
   };
 
     // Manejador para iniciar el proceso de edición
@@ -76,12 +71,10 @@ const handleEmpleadoAdded = async (newEmpleado: Empleado) => {
         setShowConfirmDelete(false);
       } catch (error) {
         console.error("Error al eliminar el empleado", error);
-        // Aquí podrías mostrar un mensaje de error si lo deseas
       }
     }
   };
 
-  // Manejador para cancelar la eliminación
   const handleDeleteCancel = () => {
     setShowConfirmDelete(false);
     setDeleteId(null);
@@ -89,7 +82,6 @@ const handleEmpleadoAdded = async (newEmpleado: Empleado) => {
 
   return (
     <>
-        {/* Formulario para agregar o editar un empleado */}
         <EmpleadosForm
           onEmpleadoAdded={handleEmpleadoAdded}
           onEmpleadoUpdated={handleEmpleadoUpdated}
@@ -158,7 +150,6 @@ const handleEmpleadoAdded = async (newEmpleado: Empleado) => {
         )}
       </div>
 
-      {/* Modal de confirmación de eliminación */}
       {showConfirmDelete && (
         <div className="modal" style={{ display: "block" }} tabIndex={-1}>
           <div className="modal-dialog">

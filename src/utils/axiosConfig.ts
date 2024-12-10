@@ -1,9 +1,7 @@
-// src/utils/axiosConfig.ts
 import axios from 'axios';
 import AuthService from '../services/AuthService';
 
 
-// Configurar interceptor de respuesta de Axios
 axios.interceptors.response.use(
   // Función para manejar respuestas exitosas
   response => response,

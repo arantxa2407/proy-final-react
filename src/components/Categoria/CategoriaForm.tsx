@@ -35,7 +35,6 @@ const CategoriaForm: React.FC<CategoriaFormProps> = ({
     let valido = true;
     const errores: { [key: string]: string } = {};
 
-    // Validaciones
     if (nombre.length < 3 || !/^[a-zA-Z\s]+$/.test(nombre)) {
       valido = false;
       errores.nombre = "El nombre debe tener al menos 3 caracteres y solo contener letras.";
@@ -45,7 +44,7 @@ const CategoriaForm: React.FC<CategoriaFormProps> = ({
 
     if (!valido) {
       setIsSubmitting(false);
-      return; // Prevenir el envío si hay errores
+      return; 
     }
 
     const categoriaData: Omit<Categoria, "id"> = {
@@ -54,14 +53,12 @@ const CategoriaForm: React.FC<CategoriaFormProps> = ({
 
     try {
       if (isEditMode && categoriaToEdit) {
-        // Actualizar categoria existente
         const response = await CategoriaService.updateCategoria(
           categoriaToEdit.id,
           categoriaData as Categoria
         );
         onCategoriaUpdated(response.data);
       } else {
-        // Crear nuevo categoria
         const response = await CategoriaService.createCategoria(
           categoriaData as Categoria
         );

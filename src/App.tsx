@@ -25,18 +25,16 @@ function App() {
 
   // Manejador para cuando el inicio de sesión es exitoso
   const handleLoginSuccess = (empleado: Empleado) => {
-    console.log('Empleado autenticado:', empleado); // Verifica los datos
+    console.log('Empleado autenticado:', empleado); 
     setIsAuthenticated(true);
     setUsername(empleado.username);
     setCurrentUser(empleado);
-
-    // Guardar empleado en localStorage
     localStorage.setItem("currentEmpleado", JSON.stringify(empleado));
   };
 
   // Manejador para cerrar sesión
   const handleLogout = () => {
-    localStorage.removeItem("currentEmpleado"); // Eliminar empleado de localStorage
+    localStorage.removeItem("currentEmpleado");
     setIsAuthenticated(false);
     setUsername("");
     setCurrentUser(null);
@@ -78,7 +76,6 @@ function App() {
                       Inicio
                     </Link>
                   </li>
-                  {/* Mostrar elementos dependiendo del rol */}
                   {currentUser?.roles?.[0]?.nombre === "ADMIN" && (
                     <>
                       <li className="nav-item mx-2">
@@ -98,15 +95,12 @@ function App() {
                       </li>
                     </>
                   )}
-                  {/* Mostrar siempre 'Inicio' y 'Venta' */}
                   <li className="nav-item mx-2">
                     <Link className="nav-link" to="/ventas">
                       Venta
                     </Link>
                   </li>
 
-
-                  {/* Mostrar el nombre del usuario y el botón de logout */}
                   <li className="nav-item mx-2">
                     <p className="navbar-text mb-0">Bienvenido, {currentUser?.nombre || username}</p>
                   </li>
@@ -124,7 +118,6 @@ function App() {
             </div>
           </nav>
 
-          {/* Pasar las propiedades a AppRoutes */}
           <AppRoutes
             isAuthenticated={isAuthenticated}
             handleLoginSuccess={handleLoginSuccess}

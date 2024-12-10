@@ -18,7 +18,7 @@
 }
 
 .prod_container:hover {
-  transform: scale(1.05); /* Aumenta la tarjeta un 5% */
+  transform: scale(1.05); 
 }
 
 .error{

@@ -17,8 +17,8 @@ const EmpleadoForm: React.FC<EmpleadoFormProps> = ({
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");
   const [genero, setGenero] = useState<string>("");
-  const [edad, setEdad] = useState<string>(""); // Cambié el tipo de número a cadena
-  const [telefono, setTelefono] = useState<string>(""); // Cambié el tipo de número a cadena
+  const [edad, setEdad] = useState<string>(""); 
+  const [telefono, setTelefono] = useState<string>("");
   const [turno, setTurno] = useState("");
   const [correo, setCorreo] = useState("");
   const [direccion, setDireccion] = useState("");
@@ -34,7 +34,6 @@ const EmpleadoForm: React.FC<EmpleadoFormProps> = ({
   // Función para generar el username automáticamente
   const generateUsername = (nombre: string, apellido: string): string => {
     const firstLetterName = nombre.charAt(0).toLowerCase();
-    // Tomar solo el primer apellido si hay más de uno
     const firstApellido = apellido.split(" ")[0];
     const formattedApellido =
       firstApellido.charAt(0).toUpperCase() +
@@ -45,7 +44,7 @@ const EmpleadoForm: React.FC<EmpleadoFormProps> = ({
   // Efecto para generar el username cada vez que cambian nombre o apellido
   useEffect(() => {
     if (nombre && apellido) {
-      setUsername(generateUsername(nombre, apellido)); // Generar username automáticamente
+      setUsername(generateUsername(nombre, apellido));
     }
   }, [nombre, apellido]);
 
@@ -68,8 +67,8 @@ const EmpleadoForm: React.FC<EmpleadoFormProps> = ({
       setNombre(empleadoToEdit.nombre);
       setApellido(empleadoToEdit.apellido);
       setGenero(empleadoToEdit.genero);
-      setEdad(empleadoToEdit.edad.toString()); // Convierte la edad a string
-      setTelefono(empleadoToEdit.telefono.toString()); // Convierte el teléfono a string
+      setEdad(empleadoToEdit.edad.toString());
+      setTelefono(empleadoToEdit.telefono.toString()); 
       setTurno(empleadoToEdit.turno);
       setCorreo(empleadoToEdit.correo);
       setDireccion(empleadoToEdit.direccion);
@@ -85,7 +84,6 @@ const EmpleadoForm: React.FC<EmpleadoFormProps> = ({
     }
   }, [empleadoToEdit]);
 
-  // Función para manejar el envío del formulario
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setIsSubmitting(true);
@@ -135,13 +133,11 @@ const EmpleadoForm: React.FC<EmpleadoFormProps> = ({
     //con esta validacion comprobaremos que no se repita el nombre de usuario y le daremos alternativas
     function generateAlternativeUsernames(nombre: string, apellido: string) {
       const usernameBase = generateUsername(nombre, apellido);
-      // Generamos dos alternativas usando el nombre base y un número aleatorio
       const alternative1 = `${usernameBase}${Math.floor(Math.random() * 100)}`;
       const alternative2 = `${usernameBase}${Math.floor(Math.random() * 100)}`;
       return [alternative1, alternative2];
     }
 
-    // Aquí omitimos las validaciones de correo y username si estamos en modo de edición
     if (!isEditMode) {
       if (
         correo ===
@@ -151,7 +147,6 @@ const EmpleadoForm: React.FC<EmpleadoFormProps> = ({
         errores.correo = "El correo ya está registrado";
       }
 
-      // Generamos alternativas si el username ya está en uso
       if (
         empleados.some((empleado) => empleado.username === username)
       ) {
@@ -166,7 +161,7 @@ const EmpleadoForm: React.FC<EmpleadoFormProps> = ({
 
     if (!valido) {
       setIsSubmitting(false);
-      return; // Prevenir el envío si hay errores
+      return;
     }
 
     const empleadoData: Omit<Empleado, "id"> & { roleId: number } = {
@@ -189,14 +184,12 @@ const EmpleadoForm: React.FC<EmpleadoFormProps> = ({
 
     try {
       if (isEditMode && empleadoToEdit) {
-        // Actualizar empleado existente
         const response = await EmpleadoService.updateEmpleado(
           empleadoToEdit.id!,
           empleadoData as Empleado
         );
         onEmpleadoUpdated(response.data);
       } else {
-        // Crear nuevo empleado
         const response = await EmpleadoService.createEmpleado(empleadoData);
         onEmpleadoAdded(response.data);
       }
@@ -482,14 +475,13 @@ const EmpleadoForm: React.FC<EmpleadoFormProps> = ({
           </small>
         </div>
 
-        {/* Contraseña */}
         <div className="col-md-4">
           <label htmlFor="direccion" className="form-label">
             Contraseña
           </label>
           <div className="input-group">
             <input
-              type={showPassword ? "text" : "password"} // Si showPassword es true, mostrar la contraseña
+              type={showPassword ? "text" : "password"} 
               className="form-control"
               id="password"
               placeholder="Contraseña del empleado"
@@ -501,7 +493,7 @@ const EmpleadoForm: React.FC<EmpleadoFormProps> = ({
               className="btn btn-outline-secondary"
               type="button"
               id="button-addon1"
-              onClick={() => setShowPassword(!showPassword)} // Cambiar el estado de visibilidad de la contraseña
+              onClick={() => setShowPassword(!showPassword)} 
             >
               <i className={showPassword ? "bi bi-eye-slash" : "bi bi-eye"}></i>
             </button>

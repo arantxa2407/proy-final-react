@@ -15,14 +15,13 @@ const ProductosForm: React.FC<ProductosFormProps> = ({
   onProductoUpdated,
   productoToEdit,
 }) => {
-  // Estados para los campos del formulario
   const [nombre, setNombre] = useState("");
   const [proveedor, setProveedor] = useState("");
   const [fecha_ingreso, setFecha_ingreso] = useState("");
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<
     number | string
-  >(""); // Estado para la categoría seleccionada
+  >(""); 
   const [cantidad, setCantidad] = useState<string>("");
   const [descripcion, setDescripcion] = useState("");
   const [precioDia, setPrecioDia] = useState<string>("");
@@ -31,7 +30,7 @@ const ProductosForm: React.FC<ProductosFormProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [precioNocheVisible, setPrecioNocheVisible] = useState(false);
   const [errores, setErrores] = useState<{ [key: string]: string }>({});
-  const [searchCategoria, setSearchCategoria] = useState(""); // Estado para la búsqueda
+  const [searchCategoria, setSearchCategoria] = useState(""); 
 
 
 
@@ -41,12 +40,11 @@ const ProductosForm: React.FC<ProductosFormProps> = ({
       setNombre(productoToEdit.nombre);
       setProveedor(productoToEdit.proveedor);
       setFecha_ingreso(productoToEdit.fecha_ingreso);
-      setCategoriaSeleccionada(productoToEdit.categoria.id); // Establecer la categoría seleccionada
+      setCategoriaSeleccionada(productoToEdit.categoria.id);
       setCantidad(productoToEdit.cantidad.toString());
       setDescripcion(productoToEdit.descripcion);
       setPrecioDia(productoToEdit.precio_dia.toString());
       setPrecioNoche(productoToEdit.precio_noche.toString());
-      // Activar el checkbox de Precio de Noche si el precio de noche es diferente al precio de día
       setPrecioNocheVisible(
         productoToEdit.precio_noche !== productoToEdit.precio_dia
       );
@@ -73,25 +71,25 @@ const ProductosForm: React.FC<ProductosFormProps> = ({
   ) => {
     setPrecioNocheVisible(event.target.checked);
     if (!event.target.checked) {
-      setPrecioNoche(""); // Limpiar el valor cuando el campo se oculta
+      setPrecioNoche(""); 
     }
   };
 
   // Función para manejar el cambio de la búsqueda de categorías
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchCategoria(event.target.value); // Actualiza el valor del estado con la cadena completa
+    setSearchCategoria(event.target.value);
   };
 
   // Filtrar las categorías según el texto de búsqueda (cualquier parte del nombre)
   const filteredCategorias = categorias.filter((categoria) =>
-    categoria.nombre.toLowerCase().includes(searchCategoria.toLowerCase()) // Se filtran las categorías
+    categoria.nombre.toLowerCase().includes(searchCategoria.toLowerCase())
   );
 
   // Función para manejar el cambio de la categoría seleccionada
   const handleCategoriaChange = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
-    setCategoriaSeleccionada(Number(event.target.value)); // Guardar el id de la categoría seleccionada
+    setCategoriaSeleccionada(Number(event.target.value)); 
   };
 
 
@@ -103,7 +101,6 @@ const ProductosForm: React.FC<ProductosFormProps> = ({
     let valido = true;
     const errores: { [key: string]: string } = {};
 
-    // Validaciones
     if (nombre.length < 3) {
       valido = false;
       errores.nombre = "El nombre debe tener al menos 3 caracteres.";
@@ -138,20 +135,20 @@ const ProductosForm: React.FC<ProductosFormProps> = ({
 
     if (!valido) {
       setIsSubmitting(false);
-      return; // Prevenir el envío si hay errores
+      return; 
     }
 
     const productoData: Omit<Producto, "id"> = {
       nombre,
       proveedor,
       fecha_ingreso,
-      categoria: categorias.find((cat) => cat.id === categoriaSeleccionada)!, // Buscar la categoría por id
+      categoria: categorias.find((cat) => cat.id === categoriaSeleccionada)!,
       cantidad: Number(cantidad),
       descripcion,
       precio_dia: Number(precioDia),
       precio_noche: precioNocheVisible
         ? Number(precioNoche)
-        : Number(precioDia), // Solo asignar precio de noche si es visible
+        : Number(precioDia), 
     };
 
     try {
@@ -182,7 +179,7 @@ const ProductosForm: React.FC<ProductosFormProps> = ({
     setNombre("");
     setProveedor("");
     setFecha_ingreso("");
-    setCategoriaSeleccionada(""); // Limpiar la categoría seleccionada
+    setCategoriaSeleccionada("");
     setCantidad("");
     setDescripcion("");
     setPrecioDia("");
@@ -260,8 +257,8 @@ const ProductosForm: React.FC<ProductosFormProps> = ({
               new Date(new Date().setDate(new Date().getDate() - 7))
                 .toISOString()
                 .split("T")[0]
-            } // No permitir fechas de más de una semana atrás
-            max={new Date().toISOString().split("T")[0]} // No permitir fechas futuras
+            } 
+            max={new Date().toISOString().split("T")[0]} 
           />
           <small
             className={`text-danger error ${
@@ -274,7 +271,6 @@ const ProductosForm: React.FC<ProductosFormProps> = ({
           </small>
         </div>
 
-        {/* Campo de categoría */}
         <div className="col-md-4">
           <label htmlFor="categoria" className="form-label">
             Categoría
@@ -408,7 +404,7 @@ const ProductosForm: React.FC<ProductosFormProps> = ({
                 value={precioNoche}
                 onChange={(e) => setPrecioNoche(e.target.value)}
                 step="0.01"
-                placeholder="Precio de noche" // Placeholder agregado
+                placeholder="Precio de noche" 
               />
             </div>
             <small

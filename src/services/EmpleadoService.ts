@@ -2,11 +2,9 @@ import axios from "axios";
 import { Empleado } from "../types/Empleado";
 import { Rol } from "../types/Rol";
 
-// URL base para las operaciones de API relacionadas con estudiantes
 const API_URL = "/api/empleados";
 
 class EmpleadoService {
-  // Obtiene todos los estudiantes
   getEmpleados() {
     return axios.get<Empleado[]>(API_URL);
   }
@@ -27,9 +25,7 @@ class EmpleadoService {
       turno: empleado.turno,
       genero: empleado.genero,
       edad: empleado.edad,
-      // Asegúrate de que `roles` se pase correctamente, tal vez un valor por defecto
       roles: [{ id: parseInt(empleado.roleId?.toString() || "2") }],
-      // Si es necesario un rol predeterminado
     };
 
     return axios.post<Empleado>(API_URL, userData);
@@ -79,11 +75,9 @@ class EmpleadoService {
     return axios.get<Rol[]>("/api/roles");
   }
 
-  // Obtiene un empleado específico por su ID
   getRolById(id: number) {
     return axios.get<Rol>(`/api/roles/${id}`);
   }
 }
 
-// Exporta una instancia única del servicio para su uso en toda la aplicación
 export default new EmpleadoService();

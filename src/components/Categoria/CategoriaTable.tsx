@@ -4,7 +4,6 @@ import CategoriaForm from "./CategoriaForm";
 import { Categoria } from "../../types/Categoria";
 
 const CategoriaTable = () => {
-  // Estados para manejar la lista de categoria y operaciones
   const [categoria, setCategoria] = useState<Categoria[]>([]);
   const [categoriaToEdit, setCategoriaToEdit] = useState<Categoria | undefined>(
     undefined
@@ -24,7 +23,6 @@ const CategoriaTable = () => {
       setCategoria(response.data);
     } catch (error) {
       console.error("Error al cargar categoria:", error);
-      // Aquí puedes agregar un toast o algún manejo de errores si es necesario
     }
   };
 
@@ -63,10 +61,8 @@ const CategoriaTable = () => {
           categoria.filter((categoria) => categoria.id !== deleteId)
         );
         setShowConfirmDelete(false);
-        // Aquí puedes agregar un toast o algún manejo de éxito si es necesario
       } catch (error) {
         console.error("Error al eliminar el categoria:", error);
-        // Aquí puedes agregar un toast o algún manejo de error si es necesario
       }
     }
   };
@@ -83,7 +79,6 @@ const CategoriaTable = () => {
         <div className="row d-flex justify-content-center">
           <div className="col-5">
             {" "}
-            {/* Esto ocupa la mitad de la pantalla */}
             <CategoriaForm
               onCategoriaAdded={handleCategoriaAdded}
               onCategoriaUpdated={handleCategoriaUpdated}
@@ -92,7 +87,6 @@ const CategoriaTable = () => {
           </div>
           <div className="col-5">
             {" "}
-            {/* Esto ocupa la mitad de la pantalla (mitad derecha) */}
             <h2>Lista de Categoria</h2>
             {categoria.length > 0 ? (
               <table id="tablaCategoria" className="table table-bordered mb-5">
@@ -142,7 +136,6 @@ const CategoriaTable = () => {
             ) : (
               <p>No hay categoria registrados</p>
             )}
-            {/* Confirmación de eliminación */}
             {showConfirmDelete && (
               <div
                 className="modal show"

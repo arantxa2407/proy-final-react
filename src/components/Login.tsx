@@ -1,4 +1,4 @@
-import styles from "../css/login.module.css"; // Importar como módulo CSS
+import styles from "../css/login.module.css";
 import img from "../assets/logo.png";
 import { useState } from "react";
 import { Empleado } from "../types/Empleado";
@@ -12,11 +12,10 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [ver, setVer] = useState(false); // Estado para controlar la visibilidad de la contraseña
+  const [ver, setVer] = useState(false);
 
-  // Función para alternar la visibilidad de la contraseña
   const verPassword = () => {
-    setVer((prevState) => !prevState); // Cambiar el valor de 'ver'
+    setVer((prevState) => !prevState); 
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -29,13 +28,13 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
           onLoginSuccess(empleado);
         }
       } catch (error) {
-        console.error('Error en la autenticación:', error); // Mostrar el error completo en la consola
+        console.error('Error en la autenticación:', error); 
         const mensaje = document.getElementById("error");
         if (mensaje) {
-          mensaje.style.display = "block"; // Mostrar el mensaje de error
+          mensaje.style.display = "block"; 
         }
       } finally {
-        setIsLoading(false); // Desactivar el estado de carga una vez terminada la validación
+        setIsLoading(false); 
       }
   };
 
@@ -68,7 +67,7 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
           <label htmlFor="password">Contraseña:</label>
           <div className={styles.input}>
             <input
-              type={ver ? "text" : "password"} // Cambia el tipo según el estado 'ver'
+              type={ver ? "text" : "password"} 
               name="password"
               value={password}
               id="password"
@@ -85,13 +84,12 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
               type="checkbox"
               name="ver"
               id="ver"
-              checked={ver} // Marca el checkbox si 'ver' es verdadero
-              onChange={verPassword} // Llama a la función para alternar la visibilidad
+              checked={ver} 
+              onChange={verPassword} 
             />
             <label htmlFor="ver">Ver contraseña</label>
           </div>
 
-          {/* Mostrar el mensaje de "Cargando..." si está en proceso de carga */}
           <button className={styles.button} type="submit" disabled={isLoading}>
             {isLoading ? "Cargando..." : "Iniciar Sesion"}
           </button>

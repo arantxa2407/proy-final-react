@@ -7,7 +7,6 @@ import Categoria from "../components/Categoria/Categoria";
 import Login from "../components/Login";
 import { Empleado as EmpleadoType } from "../types/Empleado";
 
-// Definir los tipos de las propiedades (props)
 interface AppRoutesProps {
   isAuthenticated: boolean;
   handleLoginSuccess: (empleado: EmpleadoType) => void;
@@ -27,14 +26,11 @@ const AppRoutes: React.FC<AppRoutesProps> = ({ isAuthenticated, handleLoginSucce
   // Si el usuario está autenticado, gestionamos las rutas
   return (
     <Routes>
-      {/* Redirige la ruta raíz al inicio */}
       <Route path="/" element={<Navigate to="/inicio" />} />
       
-      {/* Rutas públicas */}
       <Route path="/inicio" element={<Index currentUser={currentUser} />} />
       <Route path="/ventas" element={<Ventas />} />
 
-      {/* Rutas protegidas por rol ADMIN */}
       {currentUser?.roles?.[0]?.nombre === "ADMIN" && (
         <>
           <Route path="/empleados" element={<Empleado />} />
@@ -43,7 +39,6 @@ const AppRoutes: React.FC<AppRoutesProps> = ({ isAuthenticated, handleLoginSucce
         </>
       )}
 
-      {/* Redirigir cualquier otra ruta no definida al inicio */}
       <Route path="*" element={<Navigate to="/inicio" />} />
     </Routes>
   );

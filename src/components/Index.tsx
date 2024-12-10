@@ -1,9 +1,9 @@
-import { Link } from 'react-router-dom'; // Importar Link de react-router-dom
-import '../css/index.css'; // Importar estilos
+import { Link } from 'react-router-dom'; 
+import '../css/index.css'; 
 import { Empleado as EmpleadoType } from "../types/Empleado";
 
 interface IndexProps {
-  currentUser: EmpleadoType | null; // Usuario actual autenticado
+  currentUser: EmpleadoType | null; 
 }
 
 const Index: React.FC<IndexProps> = ({ currentUser }) => {
@@ -14,7 +14,6 @@ const Index: React.FC<IndexProps> = ({ currentUser }) => {
         <h2 className="fw-normal fs-5">¿Qué operación desea realizar?</h2>
 
         <div className="d-flex justify-content-center flex-wrap mt-4">
-          {/* Tarjeta para ventas (siempre visible para todos los usuarios) */}
           <div className="card m-3 grande" style={{ width: '18rem' }}>
             <div className="card-body">
               <h5 className="card-title">
@@ -30,10 +29,8 @@ const Index: React.FC<IndexProps> = ({ currentUser }) => {
             </div>
           </div>
 
-          {/* Si el usuario tiene el rol ADMIN, muestra las tarjetas adicionales */}
           {currentUser?.roles?.[0]?.nombre === "ADMIN" && (
             <>
-              {/* Tarjeta para gestión de productos */}
               <div className="card m-3 grande" style={{ width: '18rem' }}>
                 <div className="card-body">
                   <h5 className="card-title">
@@ -49,7 +46,6 @@ const Index: React.FC<IndexProps> = ({ currentUser }) => {
                 </div>
               </div>
 
-              {/* Tarjeta para gestión de empleados */}
               <div className="card m-3 grande" style={{ width: '18rem' }}>
                 <div className="card-body">
                   <h5 className="card-title">
@@ -65,7 +61,6 @@ const Index: React.FC<IndexProps> = ({ currentUser }) => {
                 </div>
               </div>
 
-              {/* Tarjeta para gestión de categorías */}
               <div className="card m-3 grande" style={{ width: '18rem' }}>
                 <div className="card-body">
                   <h5 className="card-title">

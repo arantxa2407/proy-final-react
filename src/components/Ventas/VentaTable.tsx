@@ -4,25 +4,21 @@ import { Venta } from "../../types/Venta";
 import VentaForm from "./VentaForm";
 
 const VentaTable = () => {
-  // Estados para manejar la lista de ventas y operaciones
   const [ventas, setVentas] = useState<Venta[]>([]);
   const [ventaToEdit, setVentaToEdit] = useState<Venta | undefined>(undefined);
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
 
-  // Cargar ventas al montar el componente
   useEffect(() => {
     fetchVentas();
   }, []);
 
-  // Función para obtener la lista de ventas
   const fetchVentas = async () => {
     try {
       const response = await VentaService.getVentas();
       setVentas(response.data);
     } catch (error) {
       console.error("Error al cargar productos:", error);
-      // Aquí puedes agregar un toast o algún manejo de errores si es necesario
     }
   };
 
@@ -59,7 +55,6 @@ const VentaTable = () => {
         setShowConfirmDelete(false);
       } catch (error) {
         console.error("Error al eliminar el producto:", error);
-        // Aquí puedes agregar un toast o algún manejo de error si es necesario
       }
     }
   };
@@ -143,7 +138,6 @@ const VentaTable = () => {
           <p>No hay ventas registrados</p>
         )}
 
-                {/* Confirmación de eliminación */}
                 {showConfirmDelete && (
           <div className="modal show" style={{ display: "block" }} tabIndex={-1}>
             <div className="modal-dialog">
