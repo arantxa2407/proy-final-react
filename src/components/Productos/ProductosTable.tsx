@@ -30,7 +30,7 @@ const ProductosTable = () => {
   const [isProviderHovered, setIsProviderHovered] = useState(false);
 
   const [ordenSeleccionado, setOrdenSeleccionado] =
-    useState<string>("fecha_ingreso_desc");
+    useState<string>("id_asc");
 
   // Cargar productos y categorías al montar el componente
   useEffect(() => {
@@ -141,6 +141,10 @@ const ProductosTable = () => {
 
   const ordenarProductos = (productos: Producto[]) => {
     switch (ordenSeleccionado) {
+      case "id_asc":
+        return productos.sort((a, b) => a.id - b.id); // Ordenar por ID de menor a mayor
+      case "id_desc":
+        return productos.sort((a, b) => b.id - a.id); // Ordenar por ID de mayor a menor
       case "fecha_ingreso_asc":
         return productos.sort(
           (a, b) =>
@@ -165,15 +169,11 @@ const ProductosTable = () => {
         return productos.sort((a, b) => a.cantidad - b.cantidad);
       case "cantidad_desc":
         return productos.sort((a, b) => b.cantidad - a.cantidad);
-      case "id_asc":
-        return productos.sort((a, b) => a.id - b.id); // Ordenar por ID de menor a mayor
-      case "id_desc":
-        return productos.sort((a, b) => b.id - a.id); // Ordenar por ID de mayor a menor
       default:
         return productos;
     }
   };
-  
+
   const productosFiltradosOrdenados = ordenarProductos(productosFiltrados);
 
   return (
@@ -184,128 +184,119 @@ const ProductosTable = () => {
         productoToEdit={productoToEdit}
       />
 
-<div className="container mt-4">
-  <h2>Lista de Productos</h2>
-  <div className="mb-3">
-    <div className="row d-flex justify-content-center align-items-center">
-      {/* Campo de búsqueda */}
-      <div className="col-md-3">
-        <input
-          type="text"
-          placeholder="Buscar por nombre de producto"
-          value={searchTerm}
-          onChange={handleSearchChange}
-          className="form-control"
-        />
-      </div>
-
-      {/* Dropdown para seleccionar categoría */}
-      <div className="col-md-2">
-        <div
-          className="dropdown"
-          onMouseEnter={() => setIsCategoryHovered(true)}
-          onMouseLeave={() => setIsCategoryHovered(false)}
-        >
-          <button className="dropdown-button">
-            Categoría
-          </button>
-          {isCategoryHovered && (
-            <div className="dropdown-options">
-              <div
-                className="dropdown-option"
-                onClick={() => handleCategoriaChange(null)}
-              >
-                Todos
-              </div>
-              {categorias.map((cat, index) => (
-                <div
-                  key={index}
-                  className="dropdown-option"
-                  onClick={() => handleCategoriaChange(cat.nombre)}
-                >
-                  {cat.nombre}
-                </div>
-              ))}
+      <div className="container mt-4">
+        <h2>Lista de Productos</h2>
+        <div className="mb-3">
+          <div className="row d-flex justify-content-between align-items-center">
+            {/* Campo de búsqueda */}
+            <div className="col-md-3">
+              <input
+                type="text"
+                placeholder="Buscar por nombre de producto"
+                value={searchTerm}
+                onChange={handleSearchChange}
+                className="form-control"
+              />
             </div>
-          )}
-        </div>
-      </div>
 
-      {/* Dropdown para seleccionar proveedor */}
-      <div className="col-md-2">
-        <div
-          className="dropdown"
-          onMouseEnter={() => setIsProviderHovered(true)}
-          onMouseLeave={() => setIsProviderHovered(false)}
-        >
-          <button className="dropdown-button">
-            Proveedor
-          </button>
-          {isProviderHovered && (
-            <div className="dropdown-options">
+            {/* Dropdown para seleccionar categoría */}
+            <div className="col-md-2">
               <div
-                className="dropdown-option"
-                onClick={() => handleProveedorChange(null)}
+                className="dropdown"
+                onMouseEnter={() => setIsCategoryHovered(true)}
+                onMouseLeave={() => setIsCategoryHovered(false)}
               >
-                Todos
-              </div>
-              {productos
-                .map((prod) => prod.proveedor)
-                .filter(
-                  (value, index, self) => self.indexOf(value) === index
-                )
-                .map((proveedor, index) => (
-                  <div
-                    key={index}
-                    className="dropdown-option"
-                    onClick={() => handleProveedorChange(proveedor)}
-                  >
-                    {proveedor}
+                <button className="dropdown-button">Categoría</button>
+                {isCategoryHovered && (
+                  <div className="dropdown-options">
+                    <div
+                      className="dropdown-option"
+                      onClick={() => handleCategoriaChange(null)}
+                    >
+                      Todos
+                    </div>
+                    {categorias.map((cat, index) => (
+                      <div
+                        key={index}
+                        className="dropdown-option"
+                        onClick={() => handleCategoriaChange(cat.nombre)}
+                      >
+                        {cat.nombre}
+                      </div>
+                    ))}
                   </div>
-                ))}
+                )}
+              </div>
             </div>
-          )}
+
+            {/* Dropdown para seleccionar proveedor */}
+            <div className="col-md-2">
+              <div
+                className="dropdown"
+                onMouseEnter={() => setIsProviderHovered(true)}
+                onMouseLeave={() => setIsProviderHovered(false)}
+              >
+                <button className="dropdown-button">Proveedor</button>
+                {isProviderHovered && (
+                  <div className="dropdown-options">
+                    <div
+                      className="dropdown-option"
+                      onClick={() => handleProveedorChange(null)}
+                    >
+                      Todos
+                    </div>
+                    {productos
+                      .map((prod) => prod.proveedor)
+                      .filter(
+                        (value, index, self) => self.indexOf(value) === index
+                      )
+                      .map((proveedor, index) => (
+                        <div
+                          key={index}
+                          className="dropdown-option"
+                          onClick={() => handleProveedorChange(proveedor)}
+                        >
+                          {proveedor}
+                        </div>
+                      ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Combobox para seleccionar el orden */}
+            <div className="col-md-3">
+              <select
+                className="form-select w-100"
+                value={ordenSeleccionado}
+                onChange={(e) => setOrdenSeleccionado(e.target.value)}
+              >
+                <option value="id_asc">ID (Menor a mayor)</option>
+                <option value="id_desc">ID (Mayor a menor)</option>
+                <option value="fecha_ingreso_desc">
+                  Fecha de Ingreso (Más reciente)
+                </option>
+                <option value="fecha_ingreso_asc">
+                  Fecha de Ingreso (Más antigua)
+                </option>
+                <option value="precio_dia_desc">
+                  Precio de Día (Mayor a menor)
+                </option>
+                <option value="precio_dia_asc">
+                  Precio de Día (Menor a mayor)
+                </option>
+                <option value="precio_noche_desc">
+                  Precio de Noche (Mayor a menor)
+                </option>
+                <option value="precio_noche_asc">
+                  Precio de Noche (Menor a mayor)
+                </option>
+                <option value="cantidad_desc">Cantidad (Mayor a menor)</option>
+                <option value="cantidad_asc">Cantidad (Menor a mayor)</option>
+              </select>
+            </div>
+          </div>
         </div>
-      </div>
-
-      {/* Combobox para seleccionar el orden */}
-      <div className="col-md-3">
-        <select
-          className="form-select w-100"
-          value={ordenSeleccionado}
-          onChange={(e) => setOrdenSeleccionado(e.target.value)}
-        >
-          <option value="fecha_ingreso_desc">
-            Fecha de Ingreso (Más reciente)
-          </option>
-          <option value="fecha_ingreso_asc">
-            Fecha de Ingreso (Más antigua)
-          </option>
-          <option value="precio_dia_desc">
-            Precio de Día (Mayor a menor)
-          </option>
-          <option value="precio_dia_asc">
-            Precio de Día (Menor a mayor)
-          </option>
-          <option value="precio_noche_desc">
-            Precio de Noche (Mayor a menor)
-          </option>
-          <option value="precio_noche_asc">
-            Precio de Noche (Menor a mayor)
-          </option>
-          <option value="cantidad_desc">Cantidad (Mayor a menor)</option>
-          <option value="cantidad_asc">Cantidad (Menor a mayor)</option>
-          <option value="id_desc">
-    ID (Mayor a menor)
-  </option>
-  <option value="id_asc">
-    ID (Menor a mayor)
-  </option>
-
-        </select>
-      </div>
-  </div>
-</div>
 
         {productosFiltrados.length > 0 ? (
           <table id="tablaProductos" className="table table-bordered mb-5">

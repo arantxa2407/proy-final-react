@@ -247,7 +247,7 @@ const VentaForm: React.FC<VentaFormProps> = ({
               type="text"
               className="form-control"
               id="searchProducto"
-              placeholder="Buscar categoría"
+              placeholder="Buscar producto"
               value={searchProducto}
               onChange={handleSearchChange}
             />
@@ -258,7 +258,7 @@ const VentaForm: React.FC<VentaFormProps> = ({
             value={productoSeleccionado}
             onChange={handleProductoChange}
           >
-              <option value="">Seleccione una categoría</option>
+              <option value="">Seleccione un producto</option>
               {filteredProductos.map((producto) => (
                 <option key={producto.id} value={producto.id}>
                   {producto.nombre}
